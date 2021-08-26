@@ -20,6 +20,21 @@
 
 ---
 <h2>
+Pre-Requisites
+</h2>
+
+<p> The project will be run entirely on a Virtual Machine, so the initial setup consists of only two downloadables:
+
+- The latest available <a href="https://www.virtualbox.org/">Oracle VIrtualBox</a> (VirtualBox 6.1 was the one used at the time of this project)
+- The <a href="https://www.centos.org/download/">CentOS Linux 8</a> DVD ISO
+</p>
+
+---
+
+
+
+---
+<h2>
 	<b>References</b>
 </h2>
 <p><a href="https://www.centos.org/"><i><b>The CentOS Project Website</b></i></a></p>
