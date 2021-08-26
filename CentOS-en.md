@@ -19,3 +19,6 @@
 </p>
 
 ---
+<h2 align=center alt="The CentOS Project Official Website" href=https://www.centos.org/>
+	<b>The CentOS Project Website</b>
+</h2>
