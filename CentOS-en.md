@@ -22,6 +22,5 @@
 <h2>
 	<b>References</b>
 </h2>
-<a href="https://www.centos.org/">
-	<i><b>The CentOS Project Website</b></i>
-</a>
+<p><a href="https://www.centos.org/"><i><b>The CentOS Project Website</b></i></a></p>
+<p><a href="https://www.openlogic.com/blog/what-centos"><i><b>What is CentOS</b></i></a> - an OpenLogic article</a></p>
