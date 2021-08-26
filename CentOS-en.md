@@ -98,7 +98,7 @@ Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) 
 Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF` installed and up-to-date. 
 
 - `dnf --version` - to check its current installed version;
-- `dnf metacahe` - to update it to the most recent version.
+- `dnf metacache` - to update it to the most recent version.
 
 Now you're ready to proceed. 
 
