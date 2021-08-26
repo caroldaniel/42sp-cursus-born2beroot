@@ -88,9 +88,96 @@ Some importante commands to keep in hand:
 
 ---
 <h2>
+	<b>Package Management in CentOS 8</b>
+</h2>
+
+Up until a while ago, `YUM` (Yellowdog Updater, Modified) was the official package manager for `RPM` (Red Hat Package Manager) based Linux distros (such as Fedora and RHEL).
+
+Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) became the new, upgraded and stable package manager, correcting some of its predecessors faults and errors, and presenting a better dependency management, better perfomance and better memory consumption.
+
+Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF` installed and up-to-date. 
+
+- `dnf --version` - to check its current installed version;
+- `dnf metacahe` - to update it to the most recent version.
+
+Now you're ready to proceed. 
+
+---
+<h2>
+	<b>SUDO install and configuration</b>
+</h2>
+
+Check if you already have `sudo` on your system:
+
+```sh
+# sudo --version
+```
+In case you don't, se `dnf` to install sudo. You will need root privileges:
+
+```sh
+# dnf install sudo
+```
+
+You will need first to configure some rules for the sudo group. there are many ways to do it: 
+
+- edit the `/etc/sudoers` file using text editors such as `vim` or `nano` (you will need to install them beforehand),
+- use the `visudo` command (which will open the same `/etc/sudoers` file) on a preeinstalled `vim` or
+- include a new file with the new specific rules asked on `/etc/sudoers.d` (that is later automatically scanned and included on `/etc/sudoers`). 
+
+For organizational purposes, I chose the latter. Some adjustments were necessary before, however. First, we need to create the sudo-log directory:
+
+```sh
+# mkdir /var/log/sudo
+```
+Then, we need to comment the line on `/etc/sudoers` that holds the information on the `secure_path` which we will be reassigning on the new file. 
+
+To configure the new sudo rules, I used the following command (on root permition):
+
+```sh
+# visudo -f /etc/sudoers.d/sudoers-rules
+```
+
+On `vim` interface in the new file, [the rules were added](screenshots/24.png).
+
+To check all users on the system, use: 
+
+```sh
+# less /etc/passwd
+```
+
+Each line in the file has seven fields delimited by colons that contain the following information:
+
+> - User name;
+> - Encrypted password (x means that the password is stored in the /etc/shadow file);
+> - User ID number (UID);
+> - User’s group ID number;
+> - Full name of the user;
+> - User home directory;
+> - Login shell.
+
+To check all groups on the system, and its users, use: 
+
+```sh
+# less /etc/group
+```
+
+You may notice that the `sudo` group, in CentOS, is called `wheel`, and in order to add a user to it you must use the command `gpasswd -a <user> wheel`. To remove them we use the `-r` flag instead of `-a`. To move the previously created user I made on installation with my intra login, I used: 
+
+```sh
+# gpasswd -a cado-car wheel
+```
+
+You also have to make sure the line on `/etc/sudoers` that says `%wheel ALL=(ALL) ALL` is uncommented. 
+
+Alternatively, to check all groups a certain member is, you may use:
+- `groups <user>`
+
+---
+<h2>
 	<b>References</b>
 </h2>
 <p><a href="https://www.centos.org/"><i><b>The CentOS Project Website</b></i></a></p>
 <p><a href="https://www.openlogic.com/blog/what-centos"><i><b>What is CentOS</b></i></a></p>
 <p><a href="https://wiki.ubuntu.com/Lvm"><i><b>What is LVM</b></i></a></p>
 <p><a href="https://www.golinuxcloud.com/create-lvm-during-installation-rhel-centos-8/"><i><b>LVM during CentOS installation</b></i></a></p>
+<p><a href="https://blog.eldernode.com/dnf-command-on-centos-8/"><i><b>DNF command on CentOS 8</b></i></a></p>
