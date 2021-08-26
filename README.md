@@ -49,5 +49,13 @@ The project
 
 ### Implementation Guide
 
-- For [CentOS Linux 8](CentOS-en.md)
+As part of my personal development, and thinking about the difficulty in finding good materials regarding the `born2beroot` project, I developed a extensive guide that works as a map through the steps that took me to complete it.
+
+However, I must warn anyone who would like to take this guide to heart: the best part of this project is, undoubtly the **research** that allow us to build the fundamental pieces of knowledge about Linux, Operational Systems, Virtualization, SSH keys, Firewall and so on. I do not, under any circunstace, recommend my `Implemetation Guides` to be taken as the absolute truth nor the only research byproduct through your own process. If anything, I would strongly recommend you to skip it altogether until you have finished it yourself. 
+
+To help you throught it, take a closer look only on each of the guide's last topic `Reference`'s links and dive deep yourself into this adventure. 
+
+If you have finished it or would still like to comprehend the path that I took to do so, read the following at your own risk:
+
+- Implementarion guide for [CentOS Linux 8](CentOS-en.md)
 

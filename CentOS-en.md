@@ -55,11 +55,42 @@ Installing
 Logical Volume Manager (LVM)
 </h2>
 
+`LVM` is a system of mapping and managing hard disk memory used on Linux-kernel's based systems. Instead of the old method of partitioning disks on a single filesystem, LVM allows you to work with "Logical Volumes", a more dinamically and flexible way to deals with your hardware.
 
+There are three major concepts you must understand to fully grasp the behaviour of LVM:
+- **Volume Group**: It is a named collection of physical and logical volumes. Typical systems only need one Volume Group to contain all of the physical and logical volumes on the system;
+- **Physical Volumes**: They correspond to disks; they are block devices that provide the space to store logical volumes;
+- **Logical Volumes**: They correspond to partitions: they hold a filesystem. Unlike partitions though, logical volumes get names rather than numbers, they can span across multiple disks, and do not have to be physically contiguous.
+
+The idea sounds symple: You take a disk, declare it as a Physical Volume, then you take that Volume and append it to the Volume Group of your choice (usually only one per computer). At last, you may "partition" that volume into small Logical Volumes that can correspond to 1 or multiple disks, and can be reallocated in memory even if they are already in use. 
+
+`LVM` is a great utility to have on servers and systems that demand usage stability and great necessity of quick management of the available physical devices (add or remove memory, for instance).
+
+---
+<h2>
+Logging into the System
+</h2>
+
+Once the installation has completed, you must reboot your system and log into the OS. 
+
+The first step is to [type in the password](screenshots/21.png) you used to encrypt your `LVM` partitions. Then, you must [choose a user to log-in](screenshots/22.png) to. I recommend using the `root` for now, as we still need to have root's privileges to completely finish the set-up. 
+
+Once you're logged in, use the following commands to check if everything is according to the plan: 
+
+> - `cat /etc/os-release` - see [information](screenshots/20.png) on the system installed;
+> - `lsblk` - see the [partitioning](screenshots/19.png)'s scheme.
+
+Some importante commands to keep in hand: 
+
+> - `logout` or `exit` - exit current session to enable you to change the active user;
+> - `reboot` - reboot the system (needs root permission);
+> - `poweroff` - turns the system off (needs root permission).
 
 ---
 <h2>
 	<b>References</b>
 </h2>
 <p><a href="https://www.centos.org/"><i><b>The CentOS Project Website</b></i></a></p>
-<p><a href="https://www.openlogic.com/blog/what-centos"><i><b>What is CentOS</b></i></a> - an OpenLogic article</a></p>
+<p><a href="https://www.openlogic.com/blog/what-centos"><i><b>What is CentOS</b></i></a></p>
+<p><a href="https://wiki.ubuntu.com/Lvm"><i><b>What is LVM</b></i></a></p>
+<p><a href="https://www.golinuxcloud.com/create-lvm-during-installation-rhel-centos-8/"><i><b>LVM during CentOS installation</b></i></a></p>
