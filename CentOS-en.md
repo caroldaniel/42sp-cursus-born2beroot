@@ -179,6 +179,43 @@ After performing the changes, restart the SSH service.
 ```sh
 # systemctl restart sshd
 ```
+
+Now you must make sure that your `SSH` connection is the only socket available on your server. A `socket` is a logical endpoint for communication. They exist on the transport layer. You can send and receive things on a socket, you can bind and listen to a socket. A socket is specific to a protocol, machine, and port, and is addressed as such in the header of a packet. To ckeck your socket status, use:
+
+```sh
+# ss -tunlp
+```
+
+<h3>
+IMPORTANT
+</h3>
+
+In some computers, it is possible that your own internet connection is being classified as `socket`, and is beeing listed as such like in the following [example](screenshots/29.png). In my case, the network interface used by the Virtual Machine only appeared uppon restarting of the NetworkManager.service (`systemctl restart NetworkManager.service`), but in some cases it might be permanently set as so. 
+
+To try and mitigate this, so that only SSH is being used as a valid socket, you should set your Machine IP as static. To do so, install `net-tools` in your machine, to enable you the `ifconfig` command. You will need it to easily [extract some information](screenshots/30.png) about your machine. First, your `network interface`, you `IP address`, your `netmask` and your `gateway`.  
+
+```sh
+# dnf install net-tools
+# ifconfig -a
+# route -n
+```
+
+My best guess is that since CentOS uses NetworkManager as default uppon start, it takes a while to identify the connection and eventually set it to static if it is set as so. If automatic, it might or might not judge necessary at all. However, we must ensure it **always** to be the case. To do so, we can use a tool called `tui` provided with NetworkManager. [Check if it's already installed](screenshots/31.png) and then use it to configure your network interface:
+
+```sh
+# nmtui-edit enp0s3
+```
+The [before](screenshots/32.png) and [after](screenshots/33.png) of this operation. 
+
+To check the new setting, restart your NetworkManager Service and wait a few minutes. Then list the sockets available again. 
+
+```sh
+# systemctl restart NetworkManager 
+# ss -tunlp
+```
+
+At the end, your socket list should look like something like [this](screenshots/34.png).
+
 ---
 <h2>
 	<b>UFW</b>
@@ -293,6 +330,102 @@ Alternatively, to check all groups a certain member is, you may use:
 
 ---
 <h2>
+	<b>Password Policy</b>
+</h2>
+
+We must apply a strong password policy for all users, root included, that must be set to this:
+> 1. Your password has to expire every 30 days.
+> 2. The minimum number of days allowed before the modification of a password will be set to 2.
+> 3. The user has to receive a warning message 7 days before their password expires.
+> 4. Your password must be at least 10 characters long. 
+> 5. It must contain an uppercase letter and a number. Also, it must not contain more than 3 consecutive identical characters.
+> 6. The password must not include the name of the user.
+> 7. The following rule does not apply to the root password: The password must have at least 7 characters that are not part of the former password.
+
+The first 4 rules must be set by editing `/etc/login.defs`. The final result should look like [this](screenshots/35.png).
+
+For the users already created (root included) these optons will not be automatically enabled. You will have to enforce them by using the `chage` command and manually apply the rules above. You can use the flag `-l` to list the rules applied to a specific user.
+```sh
+# chage -M 30 <username/root>
+# chage -m 2 <username/root>
+# chage -W 7 <username/root>
+# chage -l <username/root>
+```
+
+The last 3 rules can be applied by using a package already installed on CentOS by default called `pam-pwquality`. Check its version using: 
+```sh
+# dnf list installed | grep libpwquality 
+```
+To apply these rules, you shoud edit `etc/security/pwquality.conf` by uncomenting and changing the following lines: 
+
+```t
+# Number of characters in the new password that must not be present in the 
+# old password.
+difok = 7
+# The minimum acceptable size for the new password (plus one if 
+# credits are not disabled which is the default)
+minlen = 10
+# The maximum credit for having digits in the new password. If less than 0 
+# it is the minimun number of digits in the new password.
+dcredit = -1
+# The maximum credit for having uppercase characters in the new password. 
+# If less than 0 it is the minimun number of uppercase characters in the new 
+# password.
+ucredit = -1
+# The maximum number of allowed consecutive same characters in the new password.
+# The check is disabled if the value is 0.
+maxrepeat = 3
+# Whether to check it it contains the user name in some form.
+# The check is disabled if the value is 0.
+usercheck = 1
+# Prompt user at most N times before returning with error. The default is 1.
+retry = 3
+# Enforces pwquality checks on the root user password.
+# Enabled if the option is present.
+enforce_for_root
+```
+
+Then, since the previous users still have the old passwords, set new ones following the new password policy:
+```sh
+# passwd <username>
+```
+For `root`, "2001SpaceOdyssey".
+
+For `cado-car`, "LaD0lceVita".
+
+---
+<h2>
+	<b>Hostname, Users and Groups</b>
+</h2>
+
+You must be able to change, on demand, the `hostname` on you computer. For this project, the hostname must be your intra login + 42. It was already set upon installation, but the commands you must use to do this on command line are:
+
+- `hostnamectl status` - show current host information;
+- `hostnamectl set-hostname <new-hostname>` - change hostname on command line.
+
+You can also change your hostname by editing `/etc/hostname`. 
+
+On boot, you must have at least root and personal users available. The personal user must have be your intra login. 
+To be evaluated, you must be able to show all users on your computer, add or remove users on command, change username or add users to groups or change the user main group name. Here are some commands to help you do that: 
+- `less /etc/passwd | cut -d ":" -f 1` - show list of all users on computer;
+- `users` - show list of all users who are currently logged in;
+- `useradd <username>` - create new user with home directory;
+- `usermod <username>` - modify users settings, `-l` for username, `-c` for comments/Full Name and `-g` for GID;
+- `userdel -r <username>` - deletes user and all files attached to it;
+- `id -u <username>` - shows user's UID.
+
+Your intra login user must be on `wheel`(`sudo`) and `user42` groups. To ensure that happens, you can use some of the following commands:
+
+- `groups <username>` - shows user's groups;
+- `groupadd <groupname>` - create new group;
+- `groupdel <groupname>` - delete group;
+- `gpasswd -a <username> <groupname>` - adds user to group;
+- `gpasswd -d <username> <groupname>` - removes user from group;
+- `getent group <groupname>` - show users in group;
+- `id -g <username>` - show user's main group GID.
+
+---
+<h2>
 	<b>References</b>
 </h2>
 <p><a href="https://www.centos.org/"><i><b>The CentOS Project Website</b></i></a></p>
@@ -307,3 +440,5 @@ Alternatively, to check all groups a certain member is, you may use:
 <p><a href="https://www.itzgeek.com/how-tos/linux/centos-how-tos/semanage-command-not-found-in-centos-8-rhel-8.html"><i><b>Install 'semanage' command</b></i></a></p>
 <p><a href="https://paritoshbh.me/blog/allow-access-port-selinux-firewall"><i><b>Allow SELinux access to port on Firewall permition</b></i></a></p>
 <p><a href="https://searchsecurity.techtarget.com/definition/Secure-Shell"><i><b>What is SSH</b></i></a></p>
+<p><a href="https://www.howtoforge.com/how-to-configure-a-static-ip-address-on-centos-8/"><i><b>Configure Static IP Address on CentOS 8</b></i></a></p>
+<p><a href="https://www.server-world.info/en/note?os=CentOS_8&p=pam&f=1"><i><b>Configure Password Policy on CentOS 8</b></i></a></p>
