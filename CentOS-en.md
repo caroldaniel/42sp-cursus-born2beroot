@@ -270,4 +270,8 @@ Alternatively, to check all groups a certain member is, you may use:
 <p><a href="https://www.golinuxcloud.com/create-lvm-during-installation-rhel-centos-8/"><i><b>LVM during CentOS installation</b></i></a></p>
 <p><a href="https://blog.eldernode.com/dnf-command-on-centos-8/"><i><b>DNF command on CentOS 8</b></i></a></p>
 <p><a href="https://www.scionova.com/2019/04/08/securing-linux-with-mandatory-access-control/"><i><b>Securing Linux with MAC</b></i></a></p>
+<p><a href="https://wiki.centos.org/HowTos/SELinux"><i><b>About SELinux</b></i></a></p>
+<p><a href="https://www.linode.com/docs/guides/a-beginners-guide-to-selinux-on-centos-8/"><i><b>SELinux on CentOS 8</b></i></a></p>
+<p><a href="https://shouts.dev/install-and-setup-ufw-firewall-on-centos-8-rhel-8"><i><b>Set up UFW on CentOS 8</b></i></a></p>
+<p><a href="https://www.itzgeek.com/how-tos/linux/centos-how-tos/semanage-command-not-found-in-centos-8-rhel-8.html"><i><b>Install 'semanage' command</b></i></a></p>
 <p><a href="https://paritoshbh.me/blog/allow-access-port-selinux-firewall"><i><b>Allow SELinux access to port on Firewall permition</b></i></a></p>
