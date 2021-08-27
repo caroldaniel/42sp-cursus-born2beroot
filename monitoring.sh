@@ -2,7 +2,7 @@
 
 ## Command substitutions
 ARCH=$(uname -snrvmo)
-CPU=$(grep 'physical id' /proc/cpuinfo | uniq | wc -l)
+PCPU=$(grep 'physical id' /proc/cpuinfo | uniq | wc -l)
 VCPU=$(grep 'processor' /proc/cpuinfo | uniq | wc -l)
 FULLRAM=$(free -m | grep Mem: | awk '{print $2}')
 USEDRAM=$(free -m | grep Mem: | awk '{print $3}')
@@ -24,7 +24,7 @@ SUDO=$(journalctl _COMM=sudo | grep COMMAND | wc -l)
 echo "#Architecture: ${ARCH}"
 
 ## Shows the number of physical processors (CPUs)
-echo "#CPU physical: ${CPU}"
+echo "#CPU physical: ${PCPU}"
 
 ## Shows the number of virtual processors (vCPUs)
 echo "#vCPU: ${VCPU}"
