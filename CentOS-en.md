@@ -252,6 +252,11 @@ If you only `deny` a port, it will keep appearing on the rules as "DENY". To del
 # ufw status numbered
 # ufw delete <rule-number>
 ```
+
+Do not forget to enable your firewall on startup. 
+```sh
+# systemctl enable ufw
+```
 To eventually disable the firewall, use:
 ```sh
 # ufw disable
