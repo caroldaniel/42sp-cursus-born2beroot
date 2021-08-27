@@ -88,6 +88,20 @@ Some importante commands to keep in hand:
 
 ---
 <h2>
+	<b>Package Management in CentOS 8</b>
+</h2>
+
+Up until a while ago, `YUM` (Yellowdog Updater, Modified) was the official package manager for `RPM` (Red Hat Package Manager) based Linux distros (such as Fedora and RHEL).
+
+Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) became the new, upgraded and stable package manager, correcting some of its predecessors faults and errors, and presenting a better dependency management, better perfomance and better memory consumption.
+
+Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF` installed and up-to-date. 
+
+- `dnf --version` - to check its current installed version;
+- `dnf metacache` - to update it to the most recent version. 
+
+---
+<h2>
 	<b>MAC</b>
 </h2>
 
@@ -110,18 +124,61 @@ As the project evolves, `SELinux` will need to be modified.
 
 ---
 <h2>
-	<b>Package Management in CentOS 8</b>
+	<b>SSH</b>
 </h2>
+"Secure Socket Shell" is a network protocol that gives users, particularly system administrators, a secure way to access a computer over an unsecured network. It provides users with a strong password authentication as well as a public key authentication. It attempts communicate encrypted data over two computers using an open network. 
 
-Up until a while ago, `YUM` (Yellowdog Updater, Modified) was the official package manager for `RPM` (Red Hat Package Manager) based Linux distros (such as Fedora and RHEL).
+In order to install or update the SSH server and client, use: 
+```sh
+# dnf install openssh-server
+# dnf install openssh-clients
+```
+In order to check if the ssh service is running, use:
+```sh
+# systemctl status sshd
+```
+To start or stop the service use:
+```sh
+# systemctl start/stop sshd
+```
+To enable it on boot, use:
+```sh
+# systemctl enable sshd
+```
 
-Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) became the new, upgraded and stable package manager, correcting some of its predecessors faults and errors, and presenting a better dependency management, better perfomance and better memory consumption.
+In order to change the default SSH port, you need to [edit](screenshots/28.png) the `/etc/ssh/sshd_config` so that you deny access from root and the default port becomes 4242. Use a text editor of your choice. I chose vim. 
+```sh
+# vim /etc/ssh/sshd_config
+```
+However, since we are using SELinux, some additional steps must be taken to guarantee the 4242 port is, in fact, opened to SSH. 
+For the next steps, we will need to use `semanage` (SELinux Policy Management Tool), in order to configure some rules for the `SELinux` protocol.
 
-Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF` installed and up-to-date. 
+First, you will need to install `semanage` by discovering which package provides us with it. Use:
+```sh
+# dnf whatprovides semanage
+```
+After the results [appear on screen](screenshots/26.png), install the demander package:
+```sh
+# dnf install -y policycoreutils-python-utils
+```
+Then, run `semanage` to see its availability:
+```sh
+# semanage -h
+```
+After the installation, you must ensure SELinux is allowing port 4242 on its permitions. To do so check for the rules regarding `ssh_port_t`:
+```sh
+# semanage port -l | grep ssh
+```
+If rule 4242 is not set (port 22 was the old default), set it with the following command:
+```sh
+# semanage port -a -t ssh_port_t -p tcp 4242
+```
+When running `semanage port -l` command again, you will be able to [see port 4242](screenshots/27.png) correctly set up. 
 
-- `dnf --version` - to check its current installed version;
-- `dnf metacache` - to update it to the most recent version. 
-
+After performing the changes, restart the SSH service.
+```sh
+# systemctl restart sshd
+```
 ---
 <h2>
 	<b>UFW</b>
@@ -162,32 +219,6 @@ To eventually disable the firewall, use:
 ```sh
 # ufw disable
 ```
-
-However, since we are using SELinux, some additional steps must be taken to guarantee the 4242 port is, in fact, opened. 
-For the next steps, we will need to use `semanage` (SELinux Policy Management Tool), in order to configure some rules for the `SELinux` protocol.
-
-First, you will need to install `semanage` by discovering which package provides us with it. Use:
-```sh
-# dnf whatprovides semanage
-```
-After the results [appear on screen](screenshots/26.png), install the demander package:
-```sh
-# dnf install -y policycoreutils-python-utils
-```
-Then, run `semanage` to see its availability:
-```sh
-# semanage -h
-```
-After the installation, you must ensure SELinux is allowing port 4242 on its permitions. To do so check for the rules regarding `http_port_t`:
-```sh
-# semanage port -l | grep http_port_t
-```
-If rule 4242 is not set, set it with the following command:
-```sh
-# semanage port -a -t http_port_t -p tcp 4242
-```
-When running `semanage port -l` command again, you will be able to [see port 4242](screenshots/27.png) correctly set up. 
-
 ---
 <h2>
 	<b>SUDO install and configuration</b>
@@ -275,3 +306,4 @@ Alternatively, to check all groups a certain member is, you may use:
 <p><a href="https://shouts.dev/install-and-setup-ufw-firewall-on-centos-8-rhel-8"><i><b>Set up UFW on CentOS 8</b></i></a></p>
 <p><a href="https://www.itzgeek.com/how-tos/linux/centos-how-tos/semanage-command-not-found-in-centos-8-rhel-8.html"><i><b>Install 'semanage' command</b></i></a></p>
 <p><a href="https://paritoshbh.me/blog/allow-access-port-selinux-firewall"><i><b>Allow SELinux access to port on Firewall permition</b></i></a></p>
+<p><a href="https://searchsecurity.techtarget.com/definition/Secure-Shell"><i><b>What is SSH</b></i></a></p>
