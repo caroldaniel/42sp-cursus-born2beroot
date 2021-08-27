@@ -17,7 +17,7 @@ TCP=$(cat /proc/net/sockstat{,6} | awk '$1 == "TCP:" {print $3}')
 USERLOG=$(users | wc -w)
 IP=$(hostname -I)
 MAC=$(ip link show | awk '$1 == "link/ether" {print $2}')
-SUDO=$(journalctl _COMM=sudo | grep COMMAND | wc -l)
+SUDO=$($(journalctl _COMM=sudo | grep COMMAND | wc -l) cmd)
 
 ## Shows the architecture of the operating system and its kernel version
 echo "#Architecture: ${ARCH}"
