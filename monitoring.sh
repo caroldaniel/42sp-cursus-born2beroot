@@ -14,7 +14,7 @@ CPU=$(top -bn1 | grep '^%Cpu' | cut -c 9- | xargs | awk '{printf("%.1f%%"), $1 +
 LASTBOOT=$(who -b | awk '$1 == "system" {print $3 " " $4}')
 LVM=$(if [ $(lsblk | grep "lvm" | wc -l) -eq 0 ]; then echo no; else echo yes; fi)
 TCP=$(cat /proc/net/sockstat{,6} | awk '$1 == "TCP:" {print $3}')
-TCPMSSG=$(if ${TCP} -eq 0; then echo NOT ESTABLISHED; else echo ESTABLISHED; fi)
+TCPMSSG=$(if [ ${TCP} -eq 0 ]; then echo NOT ESTABLISHED; else echo ESTABLISHED; fi)
 USERLOG=$(users | wc -w)
 IP=$(hostname -I)
 MAC=$(ip link show | awk '$1 == "link/ether" {print $2}')
