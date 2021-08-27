@@ -88,6 +88,28 @@ Some importante commands to keep in hand:
 
 ---
 <h2>
+	<b>MAC</b>
+</h2>
+
+Mandatory Access Control (or MAC) is a security protocol that forbids any certain program, even one running on effective superuser privileges, to do anything other than what it is previously allowed to do. It is a secure measure used, mainly, in systems where stability and protection are paramount concepts (such as server units). 
+
+To enforce MAC, we can use a variety of programs. For Red Hat based systems, such as Fedora, RHEL and, of couse, our own CentOS, `SELinux` is the default. It was developed by NSA and, as of today, it is known to be one of the best, most strict and secure MAC systems there is. Of course, it comes with a setback: `SELinux` is also known to be one of the most difficult MAC systems to configure and use on a daily basis.
+
+Comparing `SELinux` with `AppArmor`, for instance, we can clearly see the difference. `AppArmor` enforces protection over objects as per configuration. That means, the application "imunizes" other apps one by one. By default, something that has not been previously set as "protected" is, by all means, vulnerable. 
+
+`SELinux` on the other hand, has the opposite behaviour. It includes the whole system in its protocols, protecting any and everything that has not been set for its own specific function. It uses a mechanism called "security label" or "security context" which classifies resources. It uses 4 different fields to effectively label and enforce security measures: user, role, type and level. These labels, on every single one of the applications available on the system, help the administrator to have complete control over any activity. 
+
+`SELinux` is, by far, more secure and more complex than any of its pairs. It is the MAC system used for this activity and most likely the biggest challenge of this project. 
+
+To ensure `SELinux` is running at startup, [check its status](screenshots/25.png) with the command bellow:
+
+```sh
+# sestatus
+```
+As the project evolves, `SELinux` will need to be modified.
+
+---
+<h2>
 	<b>Package Management in CentOS 8</b>
 </h2>
 
@@ -98,9 +120,73 @@ Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) 
 Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF` installed and up-to-date. 
 
 - `dnf --version` - to check its current installed version;
-- `dnf metacache` - to update it to the most recent version.
+- `dnf metacache` - to update it to the most recent version. 
 
-Now you're ready to proceed. 
+---
+<h2>
+	<b>UFW</b>
+</h2>
+
+`UFW` (or "Uncomplicated Firewall") is a program designed, as the name suggests, to be an easy-to-use firewall manager. 'Firewall', in turn, is a security device responsable for monitoring the information and data traffic from your local computer to the network. 
+
+As per the instructions, `UFW` will have to be installed on our machine and configured in a way that will only allow connection to port 4242. 
+
+`UFW` is not available on the CentOS repository. So, we need to install the EPEL repository on our server on root privileges:
+```sh
+# dnf install epel-release -y
+```
+Only then we will be able to install `UFW` and then enable it:
+```sh
+# dnf install ufw -y
+# ufw enable
+```
+
+To check the `UFW` current status and ports allowed or denied, use:
+```sh
+# ufw status verbose
+```
+
+You will see that the 'outgoing' rule is set to `allow`. Do not change that, otherwise the package manager and other essencial applications will stop working. 
+The subject only allows for port 4242 to be enabled, so what you can do is delete all ports available and allow 4242 at the end. The following commands may help you with this:
+```sh
+# ufw default allow/deny incoming
+# ufw default allow/deny outgoing
+# ufw allow/deny <port-number>
+```
+If you only `deny` a port, it will keep appearing on the rules as "DENY". To delete it completely, use:
+```sh
+# ufw status numbered
+# ufw delete <rule-number>
+```
+To eventually disable the firewall, use:
+```sh
+# ufw disable
+```
+
+However, since we are using SELinux, some additional steps must be taken to guarantee the 4242 port is, in fact, opened. 
+For the next steps, we will need to use `semanage` (SELinux Policy Management Tool), in order to configure some rules for the `SELinux` protocol.
+
+First, you will need to install `semanage` by discovering which package provides us with it. Use:
+```sh
+# dnf whatprovides semanage
+```
+After the results [appear on screen](screenshots/26.png), install the demander package:
+```sh
+# dnf install -y policycoreutils-python-utils
+```
+Then, run `semanage` to see its availability:
+```sh
+# semanage -h
+```
+After the installation, you must ensure SELinux is allowing port 4242 on its permitions. To do so check for the rules regarding `http_port_t`:
+```sh
+# semanage port -l | grep http_port_t
+```
+If rule 4242 is not set, set it with the following command:
+```sh
+# semanage port -a -t http_port_t -p tcp 4242
+```
+When running `semanage port -l` command again, you will be able to [see port 4242](screenshots/27.png) correctly set up. 
 
 ---
 <h2>
@@ -161,7 +247,7 @@ To check all groups on the system, and its users, use:
 # less /etc/group
 ```
 
-You may notice that the `sudo` group, in CentOS, is called `wheel`, and in order to add a user to it you must use the command `gpasswd -a <user> wheel`. To remove them we use the `-r` flag instead of `-a`. To move the previously created user I made on installation with my intra login, I used: 
+You may notice that the `sudo` group, in CentOS, is called `wheel`, and in order to add a user to it you must use the command `gpasswd -a <user> wheel`. To remove them we use the `-r` flag instead of `-a`. To move the previously created user made on installation with the intra login, I used: 
 
 ```sh
 # gpasswd -a cado-car wheel
@@ -170,7 +256,9 @@ You may notice that the `sudo` group, in CentOS, is called `wheel`, and in order
 You also have to make sure the line on `/etc/sudoers` that says `%wheel ALL=(ALL) ALL` is uncommented. 
 
 Alternatively, to check all groups a certain member is, you may use:
-- `groups <user>`
+```sh
+# groups <user>
+```
 
 ---
 <h2>
@@ -181,3 +269,5 @@ Alternatively, to check all groups a certain member is, you may use:
 <p><a href="https://wiki.ubuntu.com/Lvm"><i><b>What is LVM</b></i></a></p>
 <p><a href="https://www.golinuxcloud.com/create-lvm-during-installation-rhel-centos-8/"><i><b>LVM during CentOS installation</b></i></a></p>
 <p><a href="https://blog.eldernode.com/dnf-command-on-centos-8/"><i><b>DNF command on CentOS 8</b></i></a></p>
+<p><a href="https://www.scionova.com/2019/04/08/securing-linux-with-mandatory-access-control/"><i><b>Securing Linux with MAC</b></i></a></p>
+<p><a href="https://paritoshbh.me/blog/allow-access-port-selinux-firewall"><i><b>Allow SELinux access to port on Firewall permition</b></i></a></p>
