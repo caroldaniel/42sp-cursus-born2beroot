@@ -45,7 +45,7 @@ echo "#Last boot: ${LASTBOOT}"
 echo "#LVM use: ${LVM}"
 
 ## Shows the number of active connections
-echo "#Connexions TCP: ${TCP} ${TCPMSSG}"
+echo "#Connections TCP: ${TCP} ${TCPMSSG}"
 
 ## Shows the number of users using the server
 echo "#User log: ${USERLOG}"
