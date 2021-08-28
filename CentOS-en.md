@@ -3,92 +3,123 @@
 </h1>
 
 <p align=center>
-	As part of the challenge of setting up a functional server, I chose for this project to work with CentOS.
+	As part of the challenge of setting up a functional server, I chose <b>CentOS Linux 8</b> to work with in this project.
 </p>
 <p align=center>
-    CentOS (Community Enterprise Operating System) is a free, open source GNU/Linux distribution. It is functionally compatible and derived from RHEL(Red Hat Enterprise Linux), its subscription-paid twin.
+    <b>CentOS</b> (Community Enterprise Operating System) is a free, open source GNU/Linux distribution. It is functionally compatible and derived from RHEL (Red Hat Enterprise Linux), its subscription-paid twin.
 </p>
 <p align=center>
-    The choice for CentOS comes from a very practical and straightforward curiosity: it is Enterprise-focused and one of the most popular distros used for large-scale and modern business environments.
+    The choice for CentOS comes from a very practical and straightforward curiosity: it is enterprise-focused and one of the most popular distros used for large-scale and modern business environments.
 </p>
 <p align=center>
-    Even though CentOS was, as of this year, discontinued for new releases and support from December 2021, RHEL is still largely used in many environments, and will most likely continue to be so for the nearby future. CentOS and RHEL, being virtually the same system, require the same basic knowledge to be set, turning a CentOS project still of great value.
+    Even though CentOS was discontinued for new releases and support as of December 2021, RHEL is still largely used in many environments, and will most likely continue to be so for the nearby future. CentOS and RHEL, being virtually the same system, require the same basic knowledge to be set, making a CentOS project still one of great value.
 </p>
 <p align=center>
-    Apart from that, CentOS is a very stable OS, receiving very few and largely sparse upgrades, which turns it into the most likely system to be used as server in the real world. It was made for Enterprises, and for the purpose of this project, just makes more sense. 
+    Apart from that, CentOS is a very stable OS, receiving very few and largely sparse upgrades, which turns it into the most likely system to be used as a real server elsewhere. It was made for enterprises, and for the purpose of this project, just makes a lot more sense. 
 </p>
 
 ---
-<h2>
+<h2 align=center> Index </h2>
+<h3 align="center"><b>
+	<a href="#Install">Installing</a>
+	<span> • </span>
+	<a href="#LVM">LVM</a>
+	<span> • </span>
+	<a href="#LogIn">Logging in</a>
+	<span> • </span>
+	<a href="#PacMan">Package Management</a>
+	<span> • </span>
+	<a href="#SELinux">SELinux</a>
+	<span> • </span>
+	<a href="#UFW">UFW</a>
+	<span> • </span>
+	<a href="#SSH">SSH</a>
+	<span> • </span>
+	<a href="#TestSSH">Testing the SSH connection</a>
+	<span> • </span>
+	<a href="#SUDO">SUDO</a>
+	<span> • </span>
+	<a href="#Passwd">Password Policy</a>
+	<span> • </span>
+	<a href="#Host">Hostname, Users and Groups</a>
+	<span> • </span>
+	<a href="#Script">Monitoring Script</a>
+	<span> • </span>
+	<a href="#Bonus">Bonus</a>
+</b></h3>
+
+---
+
+<h2 id="PreReq">
 Pre-Requisites
 </h2>
 
 <p> The project will be run entirely on a Virtual Machine, so the initial setup consists of only two downloadables:
 
-- The latest available <a href="https://www.virtualbox.org/">Oracle VIrtualBox</a> (VirtualBox 6.1 was the one used at the time of this project)
-- The <a href="https://www.centos.org/download/">CentOS Linux 8</a> DVD ISO
+- The latest available <a href="https://www.virtualbox.org/">Oracle VIrtualBox</a> (VirtualBox 6.1 was the one used at the time of this project);
+- The <a href="https://www.centos.org/download/">CentOS Linux 8</a> DVD ISO.
 </p>
 
 ---
-<h2>
+<h2 id="Install">
 Installing
 </h2>
 
 1. Open `VirtualBox` and [click 'New'](screenshots/00.png);
-2. Initial set up of the Virtual Machine includes [memory](screenshots/01.png) and [hard disk](screenshots/02.png) specifications (since I attempted the bonus part, the hard drive allocation will be of 30.8Gb instead of 8Gb);
+2. Initial set up of the Virtual Machine includes [memory](screenshots/01.png) and [hard disk](screenshots/02.png) specifications (since I did the bonus part, the hard drive allocation was of 30.8Gb instead of 8Gb);
 3. After creating the VM, [click on 'Settings'](screenshots/03.png) and [enable your network](screenshots/04.png) with 'Bridge Adapter', so that your Virtual Machine will be able to use your local internet settings; 
 4. [Start](screenshots/05.png) your machine and when prompted, choose the previously downloaded `.iso` file as a [start-up disk](screenshots/06.png) to boot;
 5. When loaded, choose [Install CentOS Linux 8](screenshots/07.png) (no need to test the media beforehand) and wait for the graphical installer to appear;
 6. On the graphical interface, set-up your machine as required:
-> - Choose [language](screenshots/08.png) as better suited for you (I chose English as default);
-> - [Time and date](screenshots/09.png) to be set accordinly to your current location;
-> - [Software Selection](screenshots/10.png) has to be set for 'Minimal Install'. Once our goal is to set up a server, GUIs are explicitily forbidden and are, altogether, dispensable;
-> - [KDump](screenshots/11.png) should be set to 'disabled'. Since CentOS installation is already complex enough, additional settings were understood as optional;
-> - [Network and hostname](screenshots/12.png) should be set as per the original instructions: your `hostname` should be your `intralogin+42` (in my case, `cado-car42`) and you should make sure the internet is enabled (at this point, your hostname can be any of your choice, since you'll be asked to modify it by command-line once the installation is complete).
-> - Set a strong [Root Password](screenshots/14.png) of at least 20 characters;
-> - You can already [configure a user](screenshots/15.png) with your intra login if you want, but this step can be done once you boot you new machine; 
-> - At last, you must correctly [set-up partitions](screenshots/17.png) according to specific instructions (at this point, you can choose to create the Mandatory part's partitioning, or the Bonus part's one. I chose the Bonus one). Once you [choose the hard drive](screenshots/13.png) to partition, you must define a `custom` configuration. Pay attention to the fact that `sda1` is a `Standard Partition` while all the others are `LVM` (see below for more on 'Logical Volume Manager'). For the LVM partitions, they must all be located under an [Encrypted Volume Group](screenshots/16.png) as per the example, and you must choose a password for it (do no forget it!). It is important to notice as well that, for the \boot partition, I chose to use `ext2` file system, and for everything else, `ext4`, as of beeing more well-known and stable formats for those categories. 
-> At the end, your graphical set-up manager should look as something like [this](screenshots/18.png). Click on `Begin Installation` and you're all set.  
+> - Choose a [language](screenshots/08.png) that is better suited for your needs (I chose *English* as default);
+> - [Time and date](screenshots/09.png) must be set accordinly to your current location;
+> - [Software Selection](screenshots/10.png) has to be set for 'Minimal Install'. Since our goal is to set up a server, GUIs are explicitily forbidden and are, altogether, very much dispensable;
+> - [KDump](screenshots/11.png) should be set to 'disabled'. Since CentOS installation was already considered complex enough, this setting was flagged as optional;
+> - [Network and hostname](screenshots/12.png) should be set as per the original instructions: your `hostname` should be your `intralogin+42` and you should make sure the internet is enabled (at this point, your hostname can be any of your choice, since you'll be asked to modify it by command-line once the installation is complete).
+> - Set a strong [Root Password](screenshots/14.png) of at least 20 characters (again, this password will be changed during the project);
+> - You can already [configure a user](screenshots/15.png) with your intra login if you want, but this step can be done once you boot your new machine; 
+> - At last, you must correctly [set-up partitions](screenshots/17.png) according to specific instructions (at this point, you can choose to create the Mandatory part's partitioning, or the Bonus part's one. I chose the Bonus one). Once you [choose the hard drive](screenshots/13.png) to partition, you must define a `custom` configuration. Pay attention to the fact that `sda1` is a `Standard Partition` while all the others are `LVM` (see below for more on 'Logical Volume Manager'). For the LVM partitions, they must all be located under an [Encrypted Volume Group](screenshots/16.png) as per the example, and you must choose a password for it (For the love of God, do no forget it!). It is important to notice as well that, for the `\boot` partition, I chose to use `ext2` file system, and for everything else, `ext4`, as of beeing more well-known and stable formats for those categories, and preferable since we will be setting up SELinux. 
+> At the end, your graphical set-up manager should look like something like [this](screenshots/18.png). Click on `Begin Installation` and you're all set.  
 
 ---
-<h2>
-Logical Volume Manager (LVM)
+<h2 id="LVM">
+LVM
 </h2>
 
-`LVM` is a system of mapping and managing hard disk memory used on Linux-kernel's based systems. Instead of the old method of partitioning disks on a single filesystem, LVM allows you to work with "Logical Volumes", a more dinamically and flexible way to deals with your hardware.
+**Logical Volume Manager** is a system of mapping and managing hard disk memory used on Linux-kernel's based systems. Instead of the old method of partitioning disks on a single filesystem, and having it be limited to only 4 partitions, LVM allows you to work with "Logical Volumes", a more dinamically and flexible way to deal with your hardware.
 
 There are three major concepts you must understand to fully grasp the behaviour of LVM:
 - **Volume Group**: It is a named collection of physical and logical volumes. Typical systems only need one Volume Group to contain all of the physical and logical volumes on the system;
 - **Physical Volumes**: They correspond to disks; they are block devices that provide the space to store logical volumes;
 - **Logical Volumes**: They correspond to partitions: they hold a filesystem. Unlike partitions though, logical volumes get names rather than numbers, they can span across multiple disks, and do not have to be physically contiguous.
 
-The idea sounds symple: You take a disk, declare it as a Physical Volume, then you take that Volume and append it to the Volume Group of your choice (usually only one per computer). At last, you may "partition" that volume into small Logical Volumes that can correspond to 1 or multiple disks, and can be reallocated in memory even if they are already in use. 
+The idea sounds simple enough: You take a disk, declare it as a *Physical Volume*, then you take that volume and append it to the *Volume Group* of your choice (usually only one per computer). At last, you may "partition" that volume into small *Logical Volumes* that can correspond to 1 or multiple disks, and can be reallocated in memory even if they are already in use. 
 
-`LVM` is a great utility to have on servers and systems that demand usage stability and great necessity of quick management of the available physical devices (add or remove memory, for instance).
+LVM is a great utility to have on servers and systems that demand usage stability and great necessity of quick management of the available physical devices (it makes it way easier to add or remove memory, for instance).
 
 ---
-<h2>
-Logging into the System
+<h2 id="LogIn">
+Logging in
 </h2>
 
 Once the installation has completed, you must reboot your system and log into the OS. 
 
-The first step is to [type in the password](screenshots/21.png) you used to encrypt your `LVM` partitions. Then, you must [choose a user to log-in](screenshots/22.png) to. I recommend using the `root` for now, as we still need to have root's privileges to completely finish the set-up. 
+The first step is to [type in the password](screenshots/21.png) you used to encrypt your `LVM` partitions. Then, you must [choose a user to log-in](screenshots/22.png) to. I recommend using the `root` for now, as we still need to have root privileges to completely finish the set-up. 
 
 Once you're logged in, use the following commands to check if everything is according to the plan: 
 
-> - `cat /etc/os-release` - see [information](screenshots/20.png) on the system installed;
-> - `lsblk` - see the [partitioning](screenshots/19.png)'s scheme.
+- `cat /etc/os-release` - see [information](screenshots/20.png) on the system installed;
+- `lsblk` - see the [partitioning](screenshots/19.png)'s scheme.
 
 Some importante commands to keep in hand: 
 
-> - `logout` or `exit` - exit current session to enable you to change the active user;
-> - `reboot` - reboot the system (needs root permission);
-> - `poweroff` - turns the system off (needs root permission).
+- `logout` or `exit` - exit current session to enable you to change the active user;
+- `reboot` - reboot the system (needs root permission);
+- `poweroff` - turns the system off (needs root permission).
 
 ---
-<h2>
-	<b>Package Management in CentOS 8</b>
+<h2 id="PackMan">
+	<b>Package Management</b>
 </h2>
 
 Up until a while ago, `YUM` (Yellowdog Updater, Modified) was the official package manager for `RPM` (Red Hat Package Manager) based Linux distros (such as Fedora and RHEL).
@@ -101,17 +132,17 @@ Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF
 - `dnf metacache` - to update it to the most recent version. 
 
 ---
-<h2>
-	<b>MAC</b>
+<h2 id="SELinux">
+	<b>SELinux</b>
 </h2>
 
-Mandatory Access Control (or MAC) is a security protocol that forbids any certain program, even one running on effective superuser privileges, to do anything other than what it is previously allowed to do. It is a secure measure used, mainly, in systems where stability and protection are paramount concepts (such as server units). 
+Mandatory Access Control (or MAC) is a security protocol that forbids any certain program, even one running on effective superuser privileges, to do anything other than what it was previously allowed to do. It is a secure measure used, mainly, in systems where stability and protection are paramount concepts (such as server units). 
 
-To enforce MAC, we can use a variety of programs. For Red Hat based systems, such as Fedora, RHEL and, of couse, our own CentOS, `SELinux` is the default. It was developed by NSA and, as of today, it is known to be one of the best, most strict and secure MAC systems there is. Of course, it comes with a setback: `SELinux` is also known to be one of the most difficult MAC systems to configure and use on a daily basis.
+To enforce MAC, we can use a variety of programs. For Red Hat based systems, such as Fedora, RHEL and, of couse, our own CentOS, `SELinux` is the default, preinstalled option. It was developed by NSA and, even today, it is known to be one of the best, most strict and secure MAC systems evailable. Of course, it comes with a setback: `SELinux` is also known to be one of the most difficult MAC systems to configure and not very user-friendly.
 
 Comparing `SELinux` with `AppArmor`, for instance, we can clearly see the difference. `AppArmor` enforces protection over objects as per configuration. That means, the application "imunizes" other apps one by one. By default, something that has not been previously set as "protected" is, by all means, vulnerable. 
 
-`SELinux` on the other hand, has the opposite behaviour. It includes the whole system in its protocols, protecting any and everything that has not been set for its own specific function. It uses a mechanism called "security label" or "security context" which classifies resources. It uses 4 different fields to effectively label and enforce security measures: user, role, type and level. These labels, on every single one of the applications available on the system, help the administrator to have complete control over any activity. 
+`SELinux` on the other hand, has the opposite behaviour. It includes the whole system in its protocols, protecting any and everything that has not been set for anything other than its own specific functions. It uses a mechanism called "security label" or "security context" which classifies resources. It uses 4 different fields to effectively label and enforce security measures: user, role, type and level. These labels, on every single one of the applications available on the system, help the administrator to have complete control over any activity. 
 
 `SELinux` is, by far, more secure and more complex than any of its pairs. It is the MAC system used for this activity and most likely the biggest challenge of this project. 
 
@@ -120,13 +151,60 @@ To ensure `SELinux` is running at startup, [check its status](screenshots/25.png
 ```sh
 # sestatus
 ```
-As the project evolves, `SELinux` will need to be modified.
+As the project evolves, `SELinux` will need to be slightly modified to fulfil our needs.
 
 ---
-<h2>
+<h2 id="UFW">
+	<b>UFW</b>
+</h2>
+
+`UFW` (or "Uncomplicated Firewall") is a program designed, as the name suggests, to be an easy-to-use firewall manager. 'Firewall', in turn, is a security device responsable for monitoring the information and data traffic from your local computer to the network. 
+
+As per the instructions, `UFW` will have to be installed on our machine and configured in a way that will only allow connection to port 4242. 
+
+`UFW` is not available on the CentOS repository. So, we need to install the `EPEL` repository on our server on root privileges:
+```sh
+# dnf install epel-release -y
+```
+Only then we will be able to install `UFW` and then enable it:
+```sh
+# dnf install ufw -y
+# ufw enable
+```
+
+To check the `UFW` current status and ports allowed or denied, use:
+```sh
+# ufw status verbose
+```
+
+You will see that the 'outgoing' rule is set to `allow`. Do not change that, otherwise the package manager and other essencial applications will stop working. 
+The subject only allows for port 4242 to be enabled, so what you can do is deny all ports available and allow only 4242. The following commands may help you with this:
+```sh
+# ufw default allow/deny incoming
+# ufw default allow/deny outgoing
+# ufw allow/deny <port-number>
+```
+However, if you only `deny` a port, it will keep appearing on the rules as "DENY" status. To delete it completely, use:
+```sh
+# ufw status numbered
+# ufw delete <rule-number>
+```
+
+Do not forget to **enable your firewall on startup**. 
+```sh
+# systemctl enable ufw
+```
+To eventually disable the firewall, use:
+```sh
+# ufw disable
+```
+
+---
+<h2 id="SSH">
 	<b>SSH</b>
 </h2>
-"Secure Socket Shell" is a network protocol that gives users, particularly system administrators, a secure way to access a computer over an unsecured network. It provides users with a strong password authentication as well as a public key authentication. It attempts communicate encrypted data over two computers using an open network. 
+
+**Secure Socket Shell** is a network protocol that gives users, particularly system administrators, a secure way to access a computer over an unsecured network. It provides users with a strong password authentication as well as a public key authentication. It attempts to safely communicate encrypted data over two computers using an open network. 
 
 In order to install or update the SSH server and client, use: 
 ```sh
@@ -141,7 +219,7 @@ To start or stop the service use:
 ```sh
 # systemctl start/stop sshd
 ```
-To enable it on boot, use:
+To enable it on boot (**very important**), use:
 ```sh
 # systemctl enable sshd
 ```
@@ -150,14 +228,14 @@ In order to change the default SSH port, you need to [edit](screenshots/28.png) 
 ```sh
 # vim /etc/ssh/sshd_config
 ```
-However, since we are using SELinux, some additional steps must be taken to guarantee the 4242 port is, in fact, opened to SSH. 
-For the next steps, we will need to use `semanage` (SELinux Policy Management Tool), in order to configure some rules for the `SELinux` protocol.
+However, since we are alson using **SELinux**, some additional steps must be taken to guarantee the 4242 port is, in fact, opened to SSH. 
+For the next steps, we will need to use `semanage` (SELinux Policy Management Tool), in order to configure some rules in the `SELinux` protocol.
 
-First, you will need to install `semanage` by discovering which package provides us with it. Use:
+First, you will need to install `semanage` by discovering which package provides you with it. Use:
 ```sh
 # dnf whatprovides semanage
 ```
-After the results [appear on screen](screenshots/26.png), install the demander package:
+After the result [appear on screen](screenshots/26.png), install the demanded package:
 ```sh
 # dnf install -y policycoreutils-python-utils
 ```
@@ -169,7 +247,7 @@ After the installation, you must ensure SELinux is allowing port 4242 on its per
 ```sh
 # semanage port -l | grep ssh
 ```
-If rule 4242 is not set (port 22 was the old default), set it with the following command:
+If rule 4242 is not set (port 22 was the only default), set it with the following command:
 ```sh
 # semanage port -a -t ssh_port_t -p tcp 4242
 ```
@@ -190,9 +268,9 @@ Now you must make sure that your `SSH` connection is the only socket available o
 IMPORTANT
 </h3>
 
-In some computers, it is possible that your own internet connection is being classified as `socket`, and is beeing listed as such like in the following [example](screenshots/29.png). In my case, the network interface used by the Virtual Machine only appeared uppon restarting of the NetworkManager.service (`systemctl restart NetworkManager.service`), but in some cases it might be permanently set as so. 
+In some computers, it is possible that your own internet connection is being classified as `socket`, and is beeing listed as such like in the following [example](screenshots/29.png). In my case, the network interface used by the Virtual Machine only appeared upon the restarting of the NetworkManager.service (`systemctl restart NetworkManager.service`), but in some cases it might be permanently set as so. 
 
-To try and mitigate this, so that only SSH is being used as a valid socket, you should set your Machine IP as static. To do so, install `net-tools` in your machine, to enable you the `ifconfig` command. You will need it to easily [extract some information](screenshots/30.png) about your machine. First, your `network interface`, you `IP address`, your `netmask` and your `gateway`.  
+To try and mitigate this, so that only SSH is being used as a valid socket, you should set your Machine IP as **static**. To do so, install `net-tools` in your machine, in order to adquire the `ifconfig` command. You will need it to easily [extract some information](screenshots/30.png) about your machine: your `network interface`, you `IP address`, your `netmask` and your `gateway`.  
 
 ```sh
 # dnf install net-tools
@@ -200,14 +278,14 @@ To try and mitigate this, so that only SSH is being used as a valid socket, you 
 # route -n
 ```
 
-My best guess is that since CentOS uses NetworkManager as default uppon start, it takes a while to identify the connection and eventually set it to static if it is set as so. If automatic, it might or might not judge necessary at all. However, we must ensure it **always** to be the case. To do so, we can use a tool called `tui` provided with NetworkManager. [Check if it's already installed](screenshots/31.png) and then use it to configure your network interface:
+My best guess is that since CentOS uses NetworkManager as default upon boot, it takes a while to identify the connection and eventually set it to static if it is set as so. If automatic, it might or might not judge necessary at all. However, we must ensure it **always** to be the case. To do so, we can use a tool called `tui` provided with NetworkManager. [Make sure it is already installed](screenshots/31.png) and then use it to configure your network interface:
 
 ```sh
 # nmtui-edit enp0s3
 ```
 The [before](screenshots/32.png) and [after](screenshots/33.png) of this operation. 
 
-To check the new setting, restart your NetworkManager Service and wait a few minutes. Then list the sockets available again. 
+To check the new settings, restart your NetworkManager Service and wait a few minutes. Then list the sockets available again.
 
 ```sh
 # systemctl restart NetworkManager 
@@ -217,53 +295,37 @@ To check the new setting, restart your NetworkManager Service and wait a few min
 At the end, your socket list should look like something like [this](screenshots/34.png).
 
 ---
-<h2>
-	<b>UFW</b>
+<h2 id="TestSSH">
+	<b>Testing the SSH connection</b>
 </h2>
 
-`UFW` (or "Uncomplicated Firewall") is a program designed, as the name suggests, to be an easy-to-use firewall manager. 'Firewall', in turn, is a security device responsable for monitoring the information and data traffic from your local computer to the network. 
+You can easily test if your SSH conection is properly working by attempting to connect to your VM using another computer's terminal. On Linux's distros, WSL or MacOS it is available by default. On Windows your have to install `PuTTY`.
 
-As per the instructions, `UFW` will have to be installed on our machine and configured in a way that will only allow connection to port 4242. 
+To connect remotely to your server use: 
+```sh
+# ssh <server-user>@<server's IP number> -p <ssh-port>
+```
+ To check your server's IP number, use the command `ip addr show` as [this](screenshots/36.png)
 
-`UFW` is not available on the CentOS repository. So, we need to install the EPEL repository on our server on root privileges:
-```sh
-# dnf install epel-release -y
-```
-Only then we will be able to install `UFW` and then enable it:
-```sh
-# dnf install ufw -y
-# ufw enable
-```
+ In my server, the command was written as followed:
+> ```sh
+> # ssh cado-car@192.168.15.7 -p 4242
+> ```
 
-To check the `UFW` current status and ports allowed or denied, use:
-```sh
-# ufw status verbose
-```
+Howeverm this command only works if both computers are logged into the same local network. You may test this in your own computer. There are no root access in this method, my security reasons. 
 
-You will see that the 'outgoing' rule is set to `allow`. Do not change that, otherwise the package manager and other essencial applications will stop working. 
-The subject only allows for port 4242 to be enabled, so what you can do is delete all ports available and allow 4242 at the end. The following commands may help you with this:
+You may also send files through SSH using the following command: 
 ```sh
-# ufw default allow/deny incoming
-# ufw default allow/deny outgoing
-# ufw allow/deny <port-number>
-```
-If you only `deny` a port, it will keep appearing on the rules as "DENY". To delete it completely, use:
-```sh
-# ufw status numbered
-# ufw delete <rule-number>
+# scp -P <ssh-port> <filename> <server-user>@<server's IP number>:<newfilepath>
 ```
 
-Do not forget to enable your firewall on startup. 
-```sh
-# systemctl enable ufw
-```
-To eventually disable the firewall, use:
-```sh
-# ufw disable
-```
+To leave SSH connection use: 
+- `logout`
+- `exit`
+
 ---
-<h2>
-	<b>SUDO install and configuration</b>
+<h2 id="SUDO">
+	<b>SUDO</b>
 </h2>
 
 Check if you already have `sudo` on your system:
@@ -271,32 +333,32 @@ Check if you already have `sudo` on your system:
 ```sh
 # sudo --version
 ```
-In case you don't, se `dnf` to install sudo. You will need root privileges:
+In case you don't, use `dnf` to install it. You will need root privileges:
 
 ```sh
 # dnf install sudo
 ```
 
-You will need first to configure some rules for the sudo group. there are many ways to do it: 
+You will first need to configure some rules for the sudo group. There are many ways to do it: 
 
-- edit the `/etc/sudoers` file using text editors such as `vim` or `nano` (you will need to install them beforehand),
-- use the `visudo` command (which will open the same `/etc/sudoers` file) on a preeinstalled `vim` or
-- include a new file with the new specific rules asked on `/etc/sudoers.d` (that is later automatically scanned and included on `/etc/sudoers`). 
+- Edit the `/etc/sudoers` file using text editors such as `vim` or `nano` (you will need to install them beforehand),
+- Use the `visudo` command (which will open the same `/etc/sudoers` file) on a preeinstalled `vim` or
+- Include a new file with the new specific rules asked on `/etc/sudoers.d` (that is later automatically scanned and included on `/etc/sudoers`). 
 
-For organizational purposes, I chose the latter. Some adjustments were necessary before, however. First, we need to create the sudo-log directory:
+For organizational purposes, I chose the latter. However, some adjustments were necessary before. First, we need to create the `/var/log/sudo/` directory:
 
 ```sh
 # mkdir /var/log/sudo
 ```
 Then, we need to comment the line on `/etc/sudoers` that holds the information on the `secure_path` which we will be reassigning on the new file. 
 
-To configure the new sudo rules, I used the following command (on root permition):
+To configure the new sudo rules, I used the following command on root permition:
 
 ```sh
 # visudo -f /etc/sudoers.d/sudoers-rules
 ```
 
-On `vim` interface in the new file, [the rules were added](screenshots/24.png).
+On the `vim` interface in the new file, [the rules were added](screenshots/24.png).
 
 To check all users on the system, use: 
 
@@ -309,7 +371,7 @@ Each line in the file has seven fields delimited by colons that contain the foll
 > - User name;
 > - Encrypted password (x means that the password is stored in the /etc/shadow file);
 > - User ID number (UID);
-> - User’s group ID number;
+> - User’s group ID number (GID);
 > - Full name of the user;
 > - User home directory;
 > - Login shell.
@@ -320,7 +382,7 @@ To check all groups on the system, and its users, use:
 # less /etc/group
 ```
 
-You may notice that the `sudo` group, in CentOS, is called `wheel`, and in order to add a user to it you must use the command `gpasswd -a <user> wheel`. To remove them we use the `-r` flag instead of `-a`. To move the previously created user made on installation with the intra login, I used: 
+You may notice that the `sudo` group, in **CentOS**, is called `wheel`, and in order to add a user to it you must use the command `gpasswd -a <username> wheel`. To remove them we use the `-r` flag instead of `-a`. To move the previously created user made on installation with the intra login, I used: 
 
 ```sh
 # gpasswd -a cado-car wheel
@@ -330,11 +392,11 @@ You also have to make sure the line on `/etc/sudoers` that says `%wheel ALL=(ALL
 
 Alternatively, to check all groups a certain member is, you may use:
 ```sh
-# groups <user>
+# groups <username>
 ```
 
 ---
-<h2>
+<h2 id="Passwd">
 	<b>Password Policy</b>
 </h2>
 
@@ -345,7 +407,7 @@ We must apply a strong password policy for all users, root included, that must b
 > 4. Your password must be at least 10 characters long. 
 > 5. It must contain an uppercase letter and a number. Also, it must not contain more than 3 consecutive identical characters.
 > 6. The password must not include the name of the user.
-> 7. The following rule does not apply to the root password: The password must have at least 7 characters that are not part of the former password.
+> 7. The following rule does not apply to the root password **by default**: The password must have at least 7 characters that are not part of the former password.
 
 The first 4 rules must be set by editing `/etc/login.defs`. The final result should look like [this](screenshots/35.png).
 
@@ -361,9 +423,9 @@ The last 3 rules can be applied by using a package already installed on CentOS b
 ```sh
 # dnf list installed | grep libpwquality 
 ```
-To apply these rules, you shoud edit `etc/security/pwquality.conf` by uncomenting and changing the following lines: 
+To apply these rules, you shoud edit `etc/security/pwquality.conf` by uncommenting and changing the following lines: 
 
-```t
+```sh
 # Number of characters in the new password that must not be present in the 
 # old password.
 difok = 7
@@ -390,28 +452,28 @@ retry = 3
 enforce_for_root
 ```
 
-Then, since the previous users still have the old passwords, set new ones following the new password policy:
+Then you will need to set new passwords for the users already created (root included), following the new password policy:
 ```sh
 # passwd <username>
 ```
-For `root`, "2001SpaceOdyssey".
-
-For `cado-car`, "LaD0lceVita".
+In my server, I used:
+- For **root**: `2001SpaceOdyssey`.
+- For **cado-car**: `LaD0lceVita`.
 
 ---
-<h2>
+<h2 id="Host">
 	<b>Hostname, Users and Groups</b>
 </h2>
 
-You must be able to change, on demand, the `hostname` on you computer. For this project, the hostname must be your intra login + 42. It was already set upon installation, but the commands you must use to do this on command line are:
+You must be able to change, on demand, the `hostname` on you computer. For this project, the hostname must be your **intra login + 42**. It was already set upon installation, but the commands you must use to do this by command line are:
 
 - `hostnamectl status` - show current host information;
 - `hostnamectl set-hostname <new-hostname>` - change hostname on command line.
 
 You can also change your hostname by editing `/etc/hostname`. 
 
-On boot, you must have at least root and personal users available. The personal user must have be your intra login. 
-To be evaluated, you must be able to show all users on your computer, add or remove users on command, change username or add users to groups or change the user main group name. Here are some commands to help you do that: 
+On boot, you must have at least root and personal users available. The personal user must be your **intra login**. 
+To be evaluated, you must be able to show all users on your computer, add or remove users on command, change username, add users to groups or change the user's main group name. Here are some commands to help you do that: 
 - `less /etc/passwd | cut -d ":" -f 1` - show list of all users on computer;
 - `users` - show list of all users who are currently logged in;
 - `useradd <username>` - create new user with home directory;
@@ -428,6 +490,78 @@ Your intra login user must be on `wheel`(`sudo`) and `user42` groups. To ensure 
 - `gpasswd -d <username> <groupname>` - removes user from group;
 - `getent group <groupname>` - show users in group;
 - `id -g <username>` - show user's main group GID.
+
+---
+<h2 id="Script">
+	<b>Monitoring Script</b>
+</h2>
+
+It is mandatory to, at server startup, for a script to be displayed every 10 minutes to all terminals with some important information on the server's status. This information is listed below: 
+> - The architecture of your operating system and its kernel version;
+> - The number of physical processors;
+> - The number of virtual processors;
+> - The current available RAM on your server and its utilization rate as a percentage;
+> - The current available memory on your server and its utilization rate as a percentage;
+> - The current utilization rate of your processors as a percentage;
+> - The date and time of the last reboot;
+> - Whether LVM is active or not;
+> - The number of active connections;
+> - The number of users using the server;
+> - The IPv4 address of your server and its MAC (Media Access Control) address;
+> - The number of commands executed with the sudo program.
+
+You must write your script on a file called [`monitoring.sh`](monitoring.sh), and it **must** have execution rights (I chose to `chmod 755`).
+
+To run the script as demanded, we must first understand two very important concepts: 
+
+<h3>
+WALL
+</h3>
+
+**Wall** is a command that allows you to write a message to all users, in all terminals. It can receive either a text (it broadcasts message like `echo`) or a file content (like `cat`). 
+
+By default, `wall` broadcasts message with a banner on top. For this project, the banner is optional.
+
+To use **wall** you have two options:
+
+- `wall <"message">`
+- `wall -n <"message">` - displays with no banner
+
+<h3>
+CRON
+</h3>
+
+**Cron** is a service that runs on the backgroud and lauches configured tasks on a schedule. Cron is present on CentOS by default. To check its version or even, by some reason, eventually install it, use: 
+```sh
+# rpm -q crontabs
+# dnf install crontabs
+```
+
+Now, let's make sure it is running at startup:
+```sh
+# systemctl enable crond
+```
+You can also `disable`, `start`, `stop` and `restart` this service at your will.
+
+Cron uses `crontab` files to schedule given tasks. To manage those tasks and its frequency of execution, run: 
+```sh
+# crontab -e
+```
+It will create your own crontab (each user has one - or many). You can edit to your own like, following the syntax shown [here](screenshots/37.png). 
+
+The task specified (in my case `bash /home/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). 
+
+Some useful cron commands:
+- `crontab -l` - display the current cron settings
+- `crontab -u <username> -l` - display the current cron settings of a specific user
+- `crontab -u <username> -e` - edit the cron settings of a specific user
+
+---
+<h2 id="Bonus">
+	<b>Bonus</b>
+</h2>
+
+The **bonus** part implementation can be seen [here](Bonus-en.md). It is, however, completely optional. To complete the mandatory part, however, this is all you need to know about CentOS.
 
 ---
 <h2>
@@ -447,3 +581,4 @@ Your intra login user must be on `wheel`(`sudo`) and `user42` groups. To ensure 
 <p><a href="https://searchsecurity.techtarget.com/definition/Secure-Shell"><i><b>What is SSH</b></i></a></p>
 <p><a href="https://www.howtoforge.com/how-to-configure-a-static-ip-address-on-centos-8/"><i><b>Configure Static IP Address on CentOS 8</b></i></a></p>
 <p><a href="https://www.server-world.info/en/note?os=CentOS_8&p=pam&f=1"><i><b>Configure Password Policy on CentOS 8</b></i></a></p>
+<p><a href="https://serverspace.io/support/help/automate-regular-tasks-cron-centos-8/"><i><b>Automate Cron tasks on CentOS 8</b></i></a></p>
