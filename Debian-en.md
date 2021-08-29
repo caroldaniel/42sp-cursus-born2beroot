@@ -118,8 +118,8 @@ The first step is to [type in the password](screenshots/d52.png) you used to enc
 
 Once you're logged in, use the following commands to check if everything is according to the plan: 
 
-- `cat /etc/os-release` - see [information](screenshots/d53.png) on the system installed;
-- `lsblk` - see the [partitioning](screenshots/d54.png)'s scheme.
+- `cat /etc/os-release` - see [information](screenshots/d54.png) on the system installed;
+- `lsblk` - see the [partitioning](screenshots/d55.png)'s scheme.
 
 Some importante commands to keep in hand: 
 
