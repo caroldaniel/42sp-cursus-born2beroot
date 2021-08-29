@@ -138,7 +138,7 @@ Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF
 
 Mandatory Access Control (or MAC) is a security protocol that forbids any certain program, even one running on effective superuser privileges, to do anything other than what it was previously allowed to do. It is a secure measure used, mainly, in systems where stability and protection are paramount concepts (such as server units). 
 
-To enforce MAC, we can use a variety of programs. For Red Hat based systems, such as Fedora, RHEL and, of couse, our own CentOS, `SELinux` is the default, preinstalled option. It was developed by NSA and, even today, it is known to be one of the best, most strict and secure MAC systems evailable. Of course, it comes with a setback: `SELinux` is also known to be one of the most difficult MAC systems to configure and not very user-friendly.
+To enforce MAC, we can use a variety of programs. For Red Hat based systems, such as Fedora, RHEL and, of couse, our own CentOS, `SELinux` (Security Enhanced LInux) is the default, preinstalled option. It was developed by NSA and, even today, it is known to be one of the best, most strict and secure MAC systems evailable. Of course, it comes with a setback: `SELinux` is also known to be one of the most difficult MAC systems to configure and not very user-friendly.
 
 Comparing `SELinux` with `AppArmor`, for instance, we can clearly see the difference. `AppArmor` enforces protection over objects as per configuration. That means, the application "imunizes" other apps one by one. By default, something that has not been previously set as "protected" is, by all means, vulnerable. 
 
