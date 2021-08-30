@@ -46,6 +46,8 @@
 	<a href="#Script">Monitoring Script</a>
 	<span> • </span>
 	<a href="#Bonus">Bonus</a>
+	<span> • </span>
+	<a href="#ref">References</a>
 </b></h3>
 
 ---
@@ -567,7 +569,7 @@ The **bonus** part implementation can be seen [here](Bonus-en.md). It is, howeve
 - [Monitoring Script](screenshots/39.png)
 
 ---
-<h2>
+<h2 id="ref">
 	<b>References</b>
 </h2>
 <p><a href="https://www.centos.org/"><i><b>The CentOS Project Website</b></i></a></p>
