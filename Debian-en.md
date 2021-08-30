@@ -87,7 +87,7 @@ If might have come to your attention that, when partitioning the hard drives, th
 
 My best guess is that it happens because of a malfunction conversion of the Debian installer itself. You see, 1 kylobyte equals to 1024 bytes, not 1000. If you project that to Megas or even Gigas, it's a lot of bytes you're simply not counting. That's what Debian's installer is doing.
 
-To be very practical, it matters not in your day-to-day life either you're converting bytes by the 1000s or 1024s. But, since the project's specifications were very precise, I decided to follow along and convert everything to **real bytes** before typing them down on the partioning menu (for example, 500MB turned into 536870912B. A lot of numbers in this one, I know, but Excel is your friend). 
+To be very practical, it matters not in your day-to-day life either you're converting bytes by the 1000s or 1024s. But, since the project's specifications were very precise, I decided to follow along and convert everything to **real bytes** before typing them down on the partioning menu (for example, 500 MegaBytes turned into 524288000 Bytes. A lot of numbers in this one, I know, but Excel is your friend). 
 
 However, whether you do that in your own project is completely up to you!
 
