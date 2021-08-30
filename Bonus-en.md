@@ -11,7 +11,7 @@
 <h3 align="center"><b>
 	<a href="#WP">Wordpress</a>
 	<span> • </span>
-	<a href="#lpdd">Lighttpd</a>
+	<a href="#ltpd">Lighttpd</a>
 	<span> • </span>
 	<a href="#DB">MariaDB</a>
 	<span> • </span>
@@ -36,7 +36,7 @@ In this project, we will have to set up a Wordpress website so that our server w
 We will also need to deal with our firewall and MAC systems in order to allow communication through the correct ports. But first, let`s understand the services we will need to install beforehand. 
 
 ---
-<h2 id="lppd">
+<h2 id="ltpd">
 	Lighttpd
 </h2>
 
