@@ -3,7 +3,7 @@
 </h1>
 
 <p align=center>
-	This is the implementation guide for the bonus part of the `born2beroot` project. In here, we will describe the implementation of a Wordpress site and a service of our choice in both the operating systems defined by the project. The bonus implementation of the other partitioning scheme was already explained during both the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/master/Debian-en.md">Debian</a> and the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/master/CentOS-en.md">CentOS</a> implementation guides, so you might want to check those up first. 
+	This is the implementation guide for the bonus part of the `born2beroot` project. In here, we will describe the implementation of a Wordpress site and a service of our choice in both the operating systems defined by the project. The bonus implementation of the other partitioning scheme was already explained during both the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/master/Debian-en.md">Debian</a> and the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/master/CentOS-en.md">CentOS</a> implementation guides, so you might want to check those out first. 
 </p>
 
 ---
@@ -69,7 +69,7 @@ In Debian:
 # apt install lighttpd
 ```
 
-After installation is complete, you can use the following commands to start and enable lighttpd at startup. Don't forget to also check its status and current version. The output should appear like this on [CentOS](screenshots/50.png)
+After installation is complete, you can use the following commands to start and enable lighttpd at startup. Don't forget to also check its status and current version. The output should appear like this on [CentOS](screenshots/40.png)
 ```sh
 # systemctl start lighttpd
 # systemctl enable lighttpd
@@ -81,7 +81,7 @@ Now, you will need to allow HTTP traffic in you Firewall.
 ```sh
 # ufw allow http
 ``` 
-The default port for `http` traffic is `80`. Make sure it is already [included](screenshots/51.png) on your firewall settings. 
+The default port for `http` traffic is `80`. Make sure it is already [included](screenshots/41.png) on your firewall settings. 
 ```sh
 # ufw status
 ``` 
@@ -92,10 +92,67 @@ Now, if you're using CentOS, you must make sure SELinux is also permiting commun
 ```
 
 ---
+<h2 id="DB">
+	MariaDB
+</h2>
+
+**MariaDB** is an open source database management system that is a sort-of replacement for the MySQL database tecnology, being very much compatible and even sharing some of its own commands. It is SQL based and completely free. 
+
+To install `MariaDB` on your server, you must do the following steps:
+
+In CentOS:
+```sh
+# dnf install mariadb-server
+```
+In Debian:
+```sh
+# apt install mariadb-server
+```
+
+Same thing as done in `lighttpd`, you must make sure to start and enable `MariaDB` on startup:
+```sh
+# systemctl start mariadb
+# systemctl enable mariadb
+# systemctl status mariadb
+```
+
+Then, you should make sure tu secure MariaDB server with the following command:
+
+```sh
+# mysql_secure_installation
+```
+You should configure your MariaDB like [this](screenshots/42.png) and [this](screenshots/43.png): 
+
+```sh
+# Enter current password for root (enter for none): Enter
+# Set root password? [Y/n]: Y
+# New password: Enter password
+# Re-enter new password: Repeat password
+# Remove anonymous users? [Y/n]: Y
+# Disallow root login remotely? [Y/n]: Y
+# Remove test database and access to it? [Y/n]:  Y
+# Reload privilege tables now? [Y/n]:  Y
+```
+
+Then, you must restart `MariaDB` service:
+```sh
+# systemctl restart mariadb
+```
+
+Now you already have a database management system intalled and ready to go on your server.
+
+---
+<h2 id="DB">
+	PHP
+</h2>
+
+---
 <h2 id="ref">
 	References
 </h2>
 
 <p><a href="https://wordpress.com/"><i><b>Wordpress Website</b></i></a></p>
+<p><a href="https://www.lighttpd.net/"><i><b>Lighttpd Website</b></i></a></p>
+<p><a href="https://mariadb.org/"><i><b>MariaDB Website</b></i></a></p>
 <p><a href="https://www.osradar.com/install-wordpress-with-lighttpd-debian-10/"><i><b>How to install WordPress with lighttpd on Debian 10?</b></i></a></p>
 <p><a href="https://www.tecmint.com/install-lighttpd-with-php-fpm-mariadb-on-centos/"><i><b>How to Install Lighttpd with PHP and MariaDB on CentOS/RHEL 8/7</b></i></a></p>
