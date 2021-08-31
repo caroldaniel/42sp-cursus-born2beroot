@@ -166,7 +166,7 @@ As per the instructions, `UFW` will have to be installed on our machine and conf
 
 `UFW` is not available on the CentOS repository. So, we need to install the `EPEL` repository on our server on root privileges:
 ```sh
-# dnf install epel-release -y
+# dnf install -y epel-release
 ```
 Only then we will be able to install `UFW` and then enable it:
 ```sh

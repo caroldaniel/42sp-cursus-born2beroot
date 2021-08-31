@@ -53,10 +53,10 @@ In Debian:
 # apt update
 ```
 
-For CentOS, you will need the `EPEL` repository in order to install lighttpd. You already downloaded it during the `UFW` installation, but if you need, here's the command one more time:
-```sh
-# dnf install epel-release -y
-```
+> For CentOS, you will need the `EPEL` repository in order to install lighttpd. You already downloaded it during the `UFW` installation, but if you need, here's the command one more time:
+> ```sh
+> # dnf install -y epel-release
+> ```
 
 Now you can install lighttpd.
 
@@ -139,12 +139,93 @@ Then, you must restart `MariaDB` service:
 # systemctl restart mariadb
 ```
 
-Now you already have a database management system intalled and ready to go on your server.
+Now that you already have a database management system intalled, you will need to configure a Database to host your Wordpress site. 
+```sh
+# mysql -u root -p
+```
+You will be asked to enter your DB password. Then, you can create de Database for your Wordpress site. The final result should look like [this](screenshots/45.png). To do so, use the following comands on the MariaDB terminal:
+
+```txt
+MariaDB [(none)]> CREATE DATABASE wpdb;
+MariaDB [(none)]> CREATE USER 'wpdb-cado-car'@'cado-car42' IDENTIFIED BY 'LaD0lceVita';
+MariaDB [(none)]> GRANT ALL ON wpdb.* TO 'wpdb-cado-car'@'cado-car42' IDENTIFIED BY 'LaD0lceVita' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+```
+
 
 ---
 <h2 id="DB">
 	PHP
 </h2>
+
+**PHP** is a well-known and open-source scripting language for servers that is quite popular to develop web pages. You will need to install it in order to allow proper functioning of the Wordpress website you will try to create. For this activity, we will install the last available PHP version, which currently is `8.0`.
+
+> If you're using `CentOS`, you will need `EPEL` repository again for this one (check <a href="#ltpd">lighttpd</a> for information on how to download it). Also, you will need to download `Remi`, a third-party repository that provides a wide range of PHP versions for RedHat Enterprise Linux - including its most recent one. 
+> ```sh
+> # dnf install -y remi-release
+> ```
+> Confirm its [modules](screenshots/44.png):
+> ```sh
+> # dnf module lisst php
+> ```
+> And then enable its last version:
+> ```sh
+> # dnf module enable -y php:remi-8.0
+> ```
+
+You must install PHP and some of its modules that might be helpful to create a full operational Wordpress website. Only `php-cgi` `php-common` `php-cli` and `php-mysql` are in fact, fundamental to this project. However, I chose to download some other in order to, in the future, be able to expand my website's functionality. You may choose any packages you may find interesting. 
+
+In CentOS:
+```sh
+# dnf install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc
+```
+In Debian:
+```sh
+# apt install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc
+```
+
+After this, your basic services are already set and ready to go.
+
+---
+<h2 id="Instr">
+	Instructions
+</h2>
+
+To install wordpress into your computer, you must first make sure you have the `wget` and `tar` packages installed. 
+
+In CentOS:
+```sh
+# dnf install wget
+# dnf install tar
+```
+In Debian:
+```sh
+# apt install wget
+# apt install tar
+```
+
+After that, you can download the latest available release of Wordpress and unzip it:
+```sh
+# wget http://wordpress.org/latest.tar.gz -P /var/www/html
+# cd /var/www/html
+# tar -xzvf /var/www/html/latest.tar.gz
+# rm /var/www/html/latest.tar.gz
+```
+
+You must copy the contents of the wordpress decompressed folder into its parent folder:
+```sh
+# cp -r /var/www/html/wordpress/* /var/www/html
+# rm -rf /var/www/html/wordpress
+```
+
+Create a Wordpress configuration file from its downloaded sample, and then edit it:
+```sh
+# cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+# vi /var/www/html/wp-config.php
+```
+
+You must alter the 3 lines that specify the `DB name`, `DB user` and `DB password`, like [this](screenshots/46.png).
 
 ---
 <h2 id="ref">
