@@ -167,7 +167,7 @@ EXIT;
 > ```
 > Confirm its [modules](screenshots/44.png):
 > ```sh
-> # dnf module lisst php
+> # dnf module list php
 > ```
 > And then enable its last version:
 > ```sh
@@ -178,21 +178,61 @@ You must install PHP and some of its modules that might be helpful to create a f
 
 In CentOS:
 ```sh
-# dnf install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc
+# dnf install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 In Debian:
 ```sh
-# apt install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc
+# apt install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 
-After this, your basic services are already set and ready to go.
+After this, you can install `lighttpd-fastcgi`:
+In CentOS:
+```sh
+# dnf install lighttpd-fastcgi
+```
+In Debian:
+```sh
+# apt install lighttpd-fastcgi
+```
+
+Now, since you installed `php-fpm` and `lighttpd-fastcgi`, you must configure some details. 
+
+First, you'll [edit](screenshots/47.png) the PHP-FPM configuration file:
+
+```sh
+# vim /etc/php-fpm.d/www.conf
+```
+Then, you will edit the PHP configuration and uncomment [this](screenshots/48.png) line:
+```sh
+# vim /etc/php-fpm.d/www.conf
+```
+
+> Lastly, if you're using `CentOS` you must make sure that your SELinux is allowing connection to your `http server` and your `database`:
+> ```sh
+> # setsebool -P httpd_can_network_connect 1
+> # setsebool -P httpd_can_network_connect_db 1
+> ```
+
+You will need to start and enable PHP-FPM on boot:
+```sh
+# systemctl start php-fpm
+# systemctl enable php-fpm
+```
+
+To check if your connection is working properly, you can create an [information file](screenshots/51.png) to be displayed at your local browser:
+```sh
+# vi /var/www/lighttpd/info.php
+```
+Then you can try and access it going to you `http://'your-ip-address'/info.php`. Your webpage should display something like [this](screenshots/52.png).
+
+If everything is according to the plan, you can now install and create your Wordpress website. 
 
 ---
 <h2 id="Instr">
 	Instructions
 </h2>
 
-To install wordpress into your computer, you must first make sure you have the `wget` and `tar` packages installed. 
+To install **Wordpress** into your computer, you must first make sure you have the `wget` and `tar` packages installed. 
 
 In CentOS:
 ```sh
@@ -208,24 +248,40 @@ In Debian:
 After that, you can download the latest available release of Wordpress and unzip it:
 ```sh
 # wget http://wordpress.org/latest.tar.gz -P /var/www/html
-# cd /var/www/html
 # tar -xzvf /var/www/html/latest.tar.gz
+# mv wordpress /var/www/html/wordpress
 # rm /var/www/html/latest.tar.gz
-```
-
-You must copy the contents of the wordpress decompressed folder into its parent folder:
-```sh
-# cp -r /var/www/html/wordpress/* /var/www/html
-# rm -rf /var/www/html/wordpress
 ```
 
 Create a Wordpress configuration file from its downloaded sample, and then edit it:
 ```sh
-# cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-# vi /var/www/html/wp-config.php
+# cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+# vim /var/www/html/wordpress/wp-config.php
 ```
 
 You must alter the 3 lines that specify the `DB name`, `DB user` and `DB password`, like [this](screenshots/46.png).
+
+Lastly, you must change your wordpress folders permitions:
+
+In CentOS:
+```sh
+# chown -R lighttpd:lighttpd /var/www/html/wordpress/
+# chmod -R 755 /var/www/html/wordpress/
+```
+In Debian:
+```sh
+# chown -R www-data:www-data /var/www/html/wordpress/
+# chmod -R 755 /var/www/html/wordpress/
+```
+
+> In `CentOS` you also must set the correct `SELinux` context to the `/var/www/html/wordpress` directory and its contents:
+> ```sh
+> # semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/html/wordpress(/.*)?"
+> ```
+> For the SELinux changes to take effect, run the following command:
+> ```sh
+> # restorecon -Rv /var/www/wordpress
+> ```
 
 ---
 <h2 id="ref">

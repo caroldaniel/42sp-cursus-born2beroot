@@ -130,8 +130,7 @@ Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) 
 
 Now, on your terminal window, [make sure](screenshots/23.png) that you have `DNF` installed and up-to-date. 
 
-- `dnf --version` - to check its current installed version;
-- `dnf metacache` - to update it to the most recent version. 
+- `dnf --version` - to check its current installed version.
 
 ---
 <h2 id="SELinux">
@@ -551,7 +550,7 @@ Cron uses `crontab` files to schedule given tasks. To manage those tasks and its
 ```
 It will create your own crontab (each user has one - or many). You can edit to your own like, following the syntax shown [here](screenshots/37.png). 
 
-The task specified (in my case `bash /home/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). 
+The task specified (in my case `bash /root/scripts/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). 
 
 Some useful cron commands:
 - `crontab -l` - display the current cron settings
