@@ -59,3 +59,4 @@ If you have finished it or would still like to comprehend the path that we took 
 
 - Implementation guide for [CentOS Linux 8](CentOS-en.md)
 - Implementation guide for [Debian 11](Debian-en.md)
+- Implementation guide for the [Bonus](Bonus-en.md)
