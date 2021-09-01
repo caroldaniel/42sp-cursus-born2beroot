@@ -19,7 +19,7 @@
 	<span> • </span>
 	<a href="#Instr">Instructions</a>
 	<span> • </span>
-	<a href="#SELinux">Fail2ban</a>
+	<a href="#F2b">Fail2ban</a>
 	<span> • </span>
 	<a href="#ref">References</a>
 </b></h3>
@@ -313,6 +313,43 @@ At the end, my Wordpress website looked like this:
 <img src="screenshots/57.png" width="1000">
 <img src="screenshots/58.png" width="1000">
 <img src="screenshots/59.png" width="1000">
+
+---
+<h2 id="F2b">
+	Fail2ban
+</h2>
+
+We decided to install, as part of the last bonus task, `Fail2Ban`, a service that gives an extra layer of protection to any other service that connects through password with your server. 
+
+`Fail2Ban` finds failed login attempts using your service's `log` and blocks new attempts at login from those IPs. In doing so, it disencourages hackers and people with malicious intetions from accessing your server in full. 
+
+We will install `Fail2Ban` and configure it so it blocks remote attempts from SSH connections that typed the wrong password more than a few times.
+
+`Fail2Ban` can be found on the `EPEL` repository, which was already enabled previously on our machine. You can install it normally:
+
+```sh
+# dnf install fail2ban
+```
+Then, you can enable it at startup:
+```sh
+# systemctl start fail2ban
+# systemctl enable fail2ban
+```
+
+You will need to edit the `/etc/fail2ban/jail.local` with some [new configuration settings](screenshots/60.png) in order to activate `fail2ban` on your computer. You must then restart the service.
+
+```sh
+# vim /etc/fail2ban/jail.local
+# systemctl restart fail2ban
+# systemctl status fail2ban
+```
+
+To find status of failed and banned IP address, and the log file for `fail2ban`:
+```sh
+# fail2ban-client status
+# fail2ban-client status sshd
+# tail -f /var/log/fail2ban.log
+```
 
 ---
 <h2 id="ref">
