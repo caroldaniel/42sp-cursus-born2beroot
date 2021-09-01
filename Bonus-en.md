@@ -306,7 +306,13 @@ At last, we were able to go to my computer's browser and type:
 http://192.168.15.69/wordpress
 ```
 
-The [configuration menu](screenshots/55.png) for Wordpress should appear. 
+The [configuration menu](screenshots/55.png) for Wordpress should appear. You may configure it as you wish, [these](screenshots/56.png) are my configuration settings. Once it's all set, you may configure it as you wish: the sky is the limit!
+
+At the end, my Wordpress website looked like this:
+ 
+<img src="screenshots/57.png" width="500">
+<img src="screenshots/58.png" width="500">
+<img src="screenshots/59.png" width="500">
 
 ---
 <h2 id="ref">
