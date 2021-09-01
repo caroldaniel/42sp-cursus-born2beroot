@@ -142,7 +142,75 @@ For this project, one would be wise to work with `APT` as it is more scriptable 
 
 However, I will choose `Aptitude` for pedagogical purposes and for the fact that it has more elaborate algorithms when trying to handle difficult situations. Aptitude is a great alternative to `APT`. 
 
+Since `Aptitude` doesn't come installed in Debian, you will need to install it.
 
+```sh
+# apt-get install aptitude
+```
+After the installation is completed, type `aptitude` to [open aptitude front-end](screenshots/d56.png). From here forward, we'll use `aptitude` to manage the packages needed. 
+
+<h2 id="App">
+	<b>AppArmor</b>
+</h2>
+
+Mandatory Access Control (or MAC) is a security protocol that forbids any certain program, even one running on effective superuser privileges, to do anything other than what it was previously allowed to do. It is a secure measure used, mainly, in systems where stability and protection are paramount concepts (such as server units). 
+
+To enforce MAC, we can use a variety of programs. For Debian and all its similar systems, the default option is `AppArmor`. It enforces protection over objects as per configuration. That means, the application "imunizes" other apps one by one. By default, something that has not been previously set as "protected" is, by all means, vulnerable. 
+
+AppArmor might not be considered as efficient and secure as `SELinux`, for example, but it has an easier interface and is more user-friendly. For someone who is not all-accostumed to system administration, it becomes a great alternative for managing access control. 
+
+To make sure `AppArmor` is installed, use:
+```sh
+# aptitude search apparmor
+```
+If by any reason it is not installed, you must install it first and enable it at startup:
+
+```sh
+# aptitude install apparmor
+# aa-status 
+# systemctl enable apparmor
+```
+---
+<h2 id="UFW">
+	<b>UFW</b>
+</h2>
+
+`UFW` (or "Uncomplicated Firewall") is a program designed, as the name suggests, to be an easy-to-use firewall manager. 'Firewall', in turn, is a security device responsable for monitoring the information and data traffic from your local computer to the network. 
+
+As per the instructions, `UFW` will have to be installed on our machine and configured in a way that will only allow connection to port 4242. 
+
+`UFW` needs to installed and then enabled:
+```sh
+# aptitude install ufw
+# ufw enable
+```
+
+To check the `UFW` current status and ports allowed or denied, use:
+```sh
+# ufw status verbose
+```
+
+You will see that the 'outgoing' rule is set to `allow`. Do not change that, otherwise the package manager and other essencial applications will stop working. 
+The subject only allows for port 4242 to be enabled, so what you can do is deny all ports available and allow only 4242. The following commands may help you with this:
+```sh
+# ufw default allow/deny incoming
+# ufw default allow/deny outgoing
+# ufw allow/deny <port-number>
+```
+However, if you only `deny` a port, it will keep appearing on the rules as "DENY" status. To delete it completely, use:
+```sh
+# ufw status numbered
+# ufw delete <rule-number>
+```
+
+Do not forget to **enable your firewall on startup**. 
+```sh
+# systemctl enable ufw
+```
+To eventually disable the firewall, use:
+```sh
+# ufw disable
+```
 
 ---
 <h2>
