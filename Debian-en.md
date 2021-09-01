@@ -132,6 +132,16 @@ Some importante commands to keep in hand:
 	<b>Package Management</b>
 </h2>
 
+Debian based systems, by default, use `APT` (Advanced Package Tool) and `DPKG` package management tools. While `DPKG` is a low level package manager, used to install, remove and provide information about `.deb` packages, `APT` is more high leveled, working its way through complex package relations, such as dependency resolution. 
+
+For Debian, `APT` is the most common and most used package manager. It comes installed by default and provides command-line management for all the packages you might need on your computer in a resonably user-friendly way, with shorter and more intuitive commands.
+
+It is also preferable, for some users, to use the `Aptitude` package manager. `Aptitude` is a front-end alternative to `APT`. It allows the user to interactively pick the packages they want to install or remove, apart from also allowing flexible search patterns, such as commands and/or close-typed words. 
+
+For this project, one would be wise to work with `APT` as it is more scriptable and replicable, which makes a good choice for writing documentation (including this one). It is to my understading that `APT` can handle most of `Aptitude`'s functions through certain in-line commands (althought in not such an user-friendly and graphical way). 
+
+However, I will choose `Aptitude` for pedagogical purposes and for the fact that it has more elaborate algorithms when trying to handle difficult situations. Aptitude is a great alternative to `APT`. 
+
 
 
 ---

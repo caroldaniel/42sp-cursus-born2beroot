@@ -124,7 +124,7 @@ Some importante commands to keep in hand:
 	<b>Package Management</b>
 </h2>
 
-Up until a while ago, `YUM` (Yellowdog Updater, Modified) was the official package manager for `RPM` (Red Hat Package Manager) based Linux distros (such as Fedora and RHEL).
+Up until a while ago, `YUM` (Yellowdog Updater, Modified) was the official high-level package manager for `RPM` (Red Hat Package Manager) based Linux distros (such as Fedora and RHEL).
 
 Now, as of `CentOS Linux 8` distro and all its upstreams, `DNF` (Dandified YUM) became the new, upgraded and stable package manager, correcting some of its predecessors faults and errors, and presenting a better dependency management, better perfomance and better memory consumption.
 
