@@ -31,7 +31,7 @@
 
 **Wordpress** is a Content Manager System (CMS). In other words, it's an application that allows you to create blogs and websites, and was originally designed to be a simple, user-friendly platform so that anyone, anywhere, could create a functional website.
 
-In this project, we will have to set up a Wordpress website so that our server works as host to it. We will need to set up `http`, `Database` and `PHP` services, and make sure the website or blog is completely functional. 
+In this project, we will have to set up a Wordpress website so that our server works as host to it. We will need to set up `http` , `Database` and `PHP` services, and make sure the website or blog is completely functional. 
 
 We will also need to deal with our firewall and MAC systems in order to allow communication through the correct ports. But first, let`s understand the services we will need to install beforehand. 
 
@@ -146,9 +146,9 @@ Now that you already have a database management system intalled, you will need t
 You will be asked to enter your DB password. Then, you can create de Database for your Wordpress site. The final result should look like [this](screenshots/45.png). To do so, use the following comands on the MariaDB terminal:
 
 ```txt
-MariaDB [(none)]> CREATE DATABASE wpdb;
-MariaDB [(none)]> CREATE USER 'wpdb-cado-car'@'cado-car42' IDENTIFIED BY 'LaD0lceVita';
-MariaDB [(none)]> GRANT ALL ON wpdb.* TO 'wpdb-cado-car'@'cado-car42' IDENTIFIED BY 'LaD0lceVita' WITH GRANT OPTION;
+MariaDB [(none)]> CREATE DATABASE wordpress;
+MariaDB [(none)]> CREATE USER 'admin'@'cado-car42' IDENTIFIED BY 'WPadm1n';
+MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'cado-car42' IDENTIFIED BY 'WPadm1n' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -163,7 +163,7 @@ EXIT;
 
 > If you're using `CentOS`, you will need `EPEL` repository again for this one (check <a href="#ltpd">lighttpd</a> for information on how to download it). Also, you will need to download `Remi`, a third-party repository that provides a wide range of PHP versions for RedHat Enterprise Linux - including its most recent one. 
 > ```sh
-> # dnf install -y remi-release
+> # dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
 > ```
 > Confirm its [modules](screenshots/44.png):
 > ```sh
@@ -204,7 +204,17 @@ First, you'll [edit](screenshots/47.png) the PHP-FPM configuration file:
 ```
 Then, you will edit the PHP configuration and uncomment [this](screenshots/48.png) line:
 ```sh
-# vim /etc/php-fpm.d/www.conf
+# vim /etc/php.ini
+```
+
+Next, you need to edit a file called `modules.conf` like [this](screenshots/53.png).
+```sh
+# vim /etc/lighttpd/modules.conf
+```
+
+Then, open a third file called `/etc/lighttpd/conf.d/fastcgi.conf` and edit [these lines](screenshots/54.png).
+```sh
+# vi /etc/lighttpd/conf.d/fastcgi.conf
 ```
 
 > Lastly, if you're using `CentOS` you must make sure that your SELinux is allowing connection to your `http server` and your `database`:
@@ -247,31 +257,34 @@ In Debian:
 
 After that, you can download the latest available release of Wordpress and unzip it:
 ```sh
-# wget http://wordpress.org/latest.tar.gz -P /var/www/html
-# tar -xzvf /var/www/html/latest.tar.gz
-# mv wordpress /var/www/html/wordpress
-# rm /var/www/html/latest.tar.gz
+# wget http://wordpress.org/latest.tar.gz
+# tar -xzvf latest.tar.gz
+# mv wordpress/ /var/www/html
+# rm -rf latest.tar.gz
 ```
 
 Create a Wordpress configuration file from its downloaded sample, and then edit it:
 ```sh
-# cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
-# vim /var/www/html/wordpress/wp-config.php
+# mv /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+# vim /var/www/html/wp-config.php
 ```
 
-You must alter the 3 lines that specify the `DB name`, `DB user` and `DB password`, like [this](screenshots/46.png).
+You must alter the 3 lines that specify the `DB name`, `DB user`, `DB password` and `DB host`, like [this](screenshots/46.png).
+
+> In `CentOS`, at the first try, I needed to change the `/wordpress/` folder location from `/var/www/html/` to `/var/www/lighttpd`. Apparently that was the only folder allowed on port 80 to connect remotely. The location of the folder to apply the next steps depend on this port configuration. Modify them appropriately.
 
 Lastly, you must change your wordpress folders permitions:
 
 In CentOS:
 ```sh
-# chown -R lighttpd:lighttpd /var/www/html/wordpress/
-# chmod -R 755 /var/www/html/wordpress/
+# chown -R lighttpd:lighttpd /var/www/html/wordpress
+# chmod -R 755 /var/www/html/wordpress
+# chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
 ```
 In Debian:
 ```sh
-# chown -R www-data:www-data /var/www/html/wordpress/
-# chmod -R 755 /var/www/html/wordpress/
+# chown -R www-data:www-data /var/www/html/
+# chmod -R 755 /var/www/html/
 ```
 
 > In `CentOS` you also must set the correct `SELinux` context to the `/var/www/html/wordpress` directory and its contents:
@@ -280,8 +293,20 @@ In Debian:
 > ```
 > For the SELinux changes to take effect, run the following command:
 > ```sh
-> # restorecon -Rv /var/www/wordpress
+> # restorecon -Rv /var/www/html/wordpress
 > ```
+> Then, restart `lighttpd`
+> ```sh
+> # systemctl restart lighttpd
+> ```
+
+At last, we were able to go to my computer's browser and type:
+
+```txt
+http://192.168.15.69/wordpress
+```
+
+The [configuration menu](screenshots/55.png) for Wordpress should appear. 
 
 ---
 <h2 id="ref">
