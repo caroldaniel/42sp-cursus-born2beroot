@@ -3,7 +3,7 @@
 </h1>
 
 <p align=center>
-	This is the implementation guide for the bonus part of the `born2beroot` project. In here, we will describe the implementation of a Wordpress site and a service of our choice in both the operating systems defined by the project. The bonus implementation of the other partitioning scheme was already explained during both the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/master/Debian-en.md">Debian</a> and the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/master/CentOS-en.md">CentOS</a> implementation guides, so you might want to check those out first. 
+	This is the implementation guide for the bonus part of the `born2beroot` project. In here, we will describe the implementation of a Wordpress site and a service of our choice in both the operating systems defined by the project. The bonus implementation of the other partitioning scheme was already explained during both the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/991387eb0b1d41ad5c732b2d14554af23e234b4c/guides/Debian-en.md">Debian</a> and the <a href="https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/991387eb0b1d41ad5c732b2d14554af23e234b4c/guides/CentOS-en.md">CentOS</a> implementation guides, so you might want to check those out first. 
 </p>
 
 ---
