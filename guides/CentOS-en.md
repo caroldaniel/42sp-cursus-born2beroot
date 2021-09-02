@@ -48,6 +48,8 @@
 	<a href="#Bonus">Bonus</a>
 	<span> • </span>
 	<a href="#ref">References</a>
+	<span> • </span>
+	<a href="#sub">Submission</a>
 </b></h3>
 
 ---
@@ -566,6 +568,20 @@ The **bonus** part implementation can be seen [here](Bonus-en.md). It is, howeve
 
 - [System basic requirements](screenshots/38.png)
 - [Monitoring Script](screenshots/39.png)
+
+---
+<h2 id="sub">
+	<b>Submission</b>
+</h2>
+
+In order to submit this project, we need to extract an [`signature.txt`]() file from your Virtual Machine. To do so, go to you `Virtual Box VMs` folder in you local computer and use the following command: 
+
+- **Windows**: certUtil -hashfile centos_serv.vdi sha1
+- **Linux**: sha1sum centos_serv.vdi
+- **For Mac M1**: shasum Centos.utm/Images/disk-0.qcow2
+- **MacOS**: shasum centos_serv.vdi
+
+`centos_serv` being your active Virtual Machine. 
 
 ---
 <h2 id="ref">
