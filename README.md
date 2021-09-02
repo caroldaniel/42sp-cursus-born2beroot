@@ -57,6 +57,6 @@ To help you throught it, take a closer look only on each of the guide's last top
 
 If you have finished it or would still like to comprehend the path that we took to do so, read the following at your own risk:
 
-- Implementation guide for [CentOS Linux 8](CentOS-en.md)
-- Implementation guide for [Debian 11](Debian-en.md)
-- Implementation guide for the [Bonus](Bonus-en.md)
+- Implementation guide for [CentOS Linux 8](guides/CentOS-en.md)
+- Implementation guide for [Debian 11](guides/Debian-en.md)
+- Implementation guide for the [Bonus](guides/Bonus-en.md)
