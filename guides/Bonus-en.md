@@ -330,10 +330,9 @@ We will install `Fail2Ban` and configure it so it blocks remote attempts from SS
 ```sh
 # dnf install fail2ban
 ```
-Then, you can enable it at startup:
+Then, you can start it. I chose **not** to enable it at startup:
 ```sh
 # systemctl start fail2ban
-# systemctl enable fail2ban
 ```
 
 You will need to edit the `/etc/fail2ban/jail.local` with some [new configuration settings](screenshots/60.png) in order to activate `fail2ban` on your computer. You must then restart the service.
