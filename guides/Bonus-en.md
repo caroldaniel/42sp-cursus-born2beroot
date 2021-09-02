@@ -344,12 +344,15 @@ You will need to edit the `/etc/fail2ban/jail.local` with some [new configuratio
 # systemctl status fail2ban
 ```
 
+Since we're using a different port for ssh (port 4242), we will also need to edit the `/etc/fail2ban/jail.conf` to add the ssh port accordinly. You may choose to edit everything through this file, if you prefer. 
+
 To find status of failed and banned IP address, and the log file for `fail2ban`:
 ```sh
 # fail2ban-client status
 # fail2ban-client status sshd
 # tail -f /var/log/fail2ban.log
 ```
+
 
 ---
 <h2 id="ref">

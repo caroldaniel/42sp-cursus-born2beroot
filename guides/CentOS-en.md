@@ -511,7 +511,7 @@ It is mandatory to, at server startup, for a script to be displayed every 10 min
 > - The IPv4 address of your server and its MAC (Media Access Control) address;
 > - The number of commands executed with the sudo program.
 
-You must write your script on a file called [`monitoring.sh`](monitoring.sh), and it **must** have execution rights (I chose to `chmod 755`).
+You must write your script on a file called [`monitoring.sh`](https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/5397a3faa91f689bd956d2b656ccea8d2b199412/script/monitoring.sh), and it **must** have execution rights (I chose to `chmod 755`).
 
 To run the script as demanded, we must first understand two very important concepts: 
 
