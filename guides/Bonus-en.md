@@ -126,8 +126,8 @@ You should configure your MariaDB like [this](screenshots/42.png) and [this](scr
 ```sh
 # Enter current password for root (enter for none): Enter
 # Set root password? [Y/n]: Y
-# New password: Enter password
-# Re-enter new password: Repeat password
+# New password: C1t1zenK4ne
+# Re-enter new password: C1t1zenK4ne
 # Remove anonymous users? [Y/n]: Y
 # Disallow root login remotely? [Y/n]: Y
 # Remove test database and access to it? [Y/n]:  Y
@@ -212,7 +212,7 @@ Next, you need to edit a file called `modules.conf` like [this](screenshots/53.p
 # vim /etc/lighttpd/modules.conf
 ```
 
-Then, open a third file called `/etc/lighttpd/conf.d/fastcgi.conf` and edit [these lines](screenshots/54.png).
+Then, open a fourth file called `/etc/lighttpd/conf.d/fastcgi.conf` and edit [these lines](screenshots/54.png).
 ```sh
 # vi /etc/lighttpd/conf.d/fastcgi.conf
 ```
@@ -259,19 +259,23 @@ After that, you can download the latest available release of Wordpress and unzip
 ```sh
 # wget http://wordpress.org/latest.tar.gz
 # tar -xzvf latest.tar.gz
-# mv wordpress/ /var/www/html
-# rm -rf latest.tar.gz
+# mv wordpress/* /var/www/html/
+# rm -rf latest.tar.gz wordpress
 ```
 
 Create a Wordpress configuration file from its downloaded sample, and then edit it:
 ```sh
-# mv /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+# mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 # vim /var/www/html/wp-config.php
 ```
 
 You must alter the 3 lines that specify the `DB name`, `DB user`, `DB password` and `DB host`, like [this](screenshots/46.png).
 
-> In `CentOS`, at the first try, I needed to change the `/wordpress/` folder location from `/var/www/html/` to `/var/www/lighttpd`. Apparently that was the only folder allowed on port 80 to connect remotely. The location of the folder to apply the next steps depend on this port configuration. Modify them appropriately.
+Then, you must make sure that `lighttpd` is getting the correct folder in which your wordpress data is (`/var/www/html/`). To do so, change your lighttpd server root location to be like [this](screenshots/61.png).
+
+```sh
+# vim /etc/lighttpd/lighttpd.conf
+```
 
 Lastly, you must change your wordpress folders permitions:
 
@@ -285,25 +289,13 @@ In Debian:
 ```sh
 # chown -R www-data:www-data /var/www/html/
 # chmod -R 755 /var/www/html/
+# chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
 ```
 
-> In `CentOS` you also must set the correct `SELinux` context to the `/var/www/html/wordpress` directory and its contents:
-> ```sh
-> # semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/html/wordpress(/.*)?"
-> ```
-> For the SELinux changes to take effect, run the following command:
-> ```sh
-> # restorecon -Rv /var/www/html/wordpress
-> ```
-> Then, restart `lighttpd`
-> ```sh
-> # systemctl restart lighttpd
-> ```
-
-At last, we were able to go to my computer's browser and type:
+At last, restart `lighttpd` againg and we are finally able to go to the computer's browser and type:
 
 ```txt
-http://192.168.15.69/wordpress
+http://192.168.15.181/
 ```
 
 The [configuration menu](screenshots/55.png) for Wordpress should appear. You may configure it as you wish, [these](screenshots/56.png) are my configuration settings. Once it's all set, you may configure it as you wish: the sky is the limit!

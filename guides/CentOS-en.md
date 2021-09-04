@@ -202,6 +202,11 @@ To eventually disable the firewall, use:
 # ufw disable
 ```
 
+TIP: It's important to restart your firewall at any port's changes or additions, in order to make sure the alterations will stuck.
+```sh
+# systemctl restart ufw
+```
+
 ---
 <h2 id="SSH">
 	<b>SSH</b>
@@ -211,8 +216,7 @@ To eventually disable the firewall, use:
 
 In order to install or update the SSH server and client, use: 
 ```sh
-# dnf install openssh-server
-# dnf install openssh-clients
+# dnf install openssh
 ```
 In order to check if the ssh service is running, use:
 ```sh
@@ -227,7 +231,7 @@ To enable it on boot (**very important**), use:
 # systemctl enable sshd
 ```
 
-In order to change the default SSH port, you need to [edit](screenshots/28.png) the `/etc/ssh/sshd_config` so that you deny access from root and the default port becomes 4242. Use a text editor of your choice. I chose vim. 
+In order to change the default SSH port, you need to [edit](screenshots/28.png) the `/etc/ssh/sshd_config` so that you deny access from root and the default port becomes 4242. Use a text editor of your choice. I chose vim (you may need to install it by using `dnf install vim` on the command line). 
 ```sh
 # vim /etc/ssh/sshd_config
 ```
@@ -312,7 +316,7 @@ To connect remotely to your server use:
 
  In my server, the command was written as followed:
 > ```sh
-> # ssh cado-car@192.168.15.7 -p 4242
+> # ssh cado-car@192.168.15.181 -p 4242
 > ```
 
 Howeverm this command only works if both computers are logged into the same local network. You may test this in your own computer. There are no root access in this method, my security reasons. 
@@ -486,6 +490,7 @@ To be evaluated, you must be able to show all users on your computer, add or rem
 
 Your intra login user must be on `wheel`(`sudo`) and `user42` groups. To ensure that happens, you can use some of the following commands:
 
+- `less /etc/group | cut -d ":" -f 1` - show list of all users on computer;
 - `groups <username>` - shows user's groups;
 - `groupadd <groupname>` - create new group;
 - `groupdel <groupname>` - delete group;
@@ -552,7 +557,7 @@ Cron uses `crontab` files to schedule given tasks. To manage those tasks and its
 ```
 It will create your own crontab (each user has one - or many). You can edit to your own like, following the syntax shown [here](screenshots/37.png). 
 
-The task specified (in my case `bash /root/scripts/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). 
+The task specified (in my case `bash /root/scripts/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). However, according to the projects specifications, the script must run from the server **startup**. To do so, I added a [`sleep` script]() on my crontab. 
 
 Some useful cron commands:
 - `crontab -l` - display the current cron settings
