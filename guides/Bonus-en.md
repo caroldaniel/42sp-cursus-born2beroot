@@ -327,10 +327,10 @@ Then, you can start it. I chose **not** to enable it at startup:
 # systemctl start fail2ban
 ```
 
-You will need to edit the `/etc/fail2ban/jail.local` with some [new configuration settings](screenshots/60.png) in order to activate `fail2ban` on your computer. You must then restart the service.
+You will need to create and edit the `/etc/fail2ban/jail.local` with some [new configuration settings](screenshots/60.png) regarding ssh service, in order to activate `fail2ban` on your computer. You must then restart the service.
 
 ```sh
-# vim /etc/fail2ban/jail.local
+# cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 # systemctl restart fail2ban
 # systemctl status fail2ban
 ```
@@ -343,7 +343,6 @@ To find status of failed and banned IP address, and the log file for `fail2ban`:
 # fail2ban-client status sshd
 # tail -f /var/log/fail2ban.log
 ```
-
 
 ---
 <h2 id="ref">

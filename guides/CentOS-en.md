@@ -557,7 +557,7 @@ Cron uses `crontab` files to schedule given tasks. To manage those tasks and its
 ```
 It will create your own crontab (each user has one - or many). You can edit to your own like, following the syntax shown [here](screenshots/37.png). 
 
-The task specified (in my case `bash /root/scripts/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). However, according to the projects specifications, the script must run from the server **startup**. To do so, I added a [`sleep` script]() on my crontab. 
+The task specified (in my case `bash /root/scripts/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). However, according to the projects specifications, the script must run from the server **startup**. To do so, I added [`sleep.sh`](https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/cfe26f86e79f43340f18544342e61b246247232c/script/sleep.sh) on my crontab. 
 
 Some useful cron commands:
 - `crontab -l` - display the current cron settings
