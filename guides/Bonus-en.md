@@ -174,25 +174,35 @@ EXIT;
 > # dnf module enable -y php:remi-8.0
 > ```
 
+> If you're using Debian you you need to install some repositories in order to be able to install `php 8.0`. 
+> ```sh
+> # aptitude install -y lsb-release ca-certificates apt-transport-https software-properties-common
+> # echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+> # wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+> # aptitude update
+> # aptitude install php8.0
+> ```
+
 You must install PHP and some of its modules that might be helpful to create a full operational Wordpress website. Only `php-cgi` `php-common` `php-cli` and `php-mysql` are in fact, fundamental to this project. However, I chose to download some other in order to, in the future, be able to expand my website's functionality. You may choose any packages you may find interesting. 
 
 In CentOS:
 ```sh
-# dnf install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
+# dnf install php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 In Debian:
 ```sh
-# apt install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
+# aptitude install php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 
 After this, you can install `lighttpd-fastcgi`:
+
 In CentOS:
 ```sh
 # dnf install lighttpd-fastcgi
 ```
 In Debian:
 ```sh
-# apt install lighttpd-fastcgi
+# aptitude install lighttpd-fastcgi
 ```
 
 Now, since you installed `php-fpm` and `lighttpd-fastcgi`, you must configure some details. 
@@ -354,3 +364,4 @@ To find status of failed and banned IP address, and the log file for `fail2ban`:
 <p><a href="https://mariadb.org/"><i><b>MariaDB Website</b></i></a></p>
 <p><a href="https://www.osradar.com/install-wordpress-with-lighttpd-debian-10/"><i><b>How to install WordPress with lighttpd on Debian 10?</b></i></a></p>
 <p><a href="https://www.tecmint.com/install-lighttpd-with-php-fpm-mariadb-on-centos/"><i><b>How to Install Lighttpd with PHP and MariaDB on CentOS/RHEL 8/7</b></i></a></p>
+<p><a href="https://computingforgeeks.com/how-to-install-php-on-debian-linux/"><i><b>How to Install PHP on Debian 11</b></i></a></p>
