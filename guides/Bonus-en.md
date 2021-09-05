@@ -42,18 +42,7 @@ We will also need to deal with our firewall and MAC systems in order to allow co
 
 **Lighttpd** is an open-source web server known for being fast, secure and optimized for less memory consumption than its pairs. 
 
-To install `lighttpd` on your system, you first need to make sure your packages are all up-to-date. You will need root privileges for the entire process. 
-
-In CentOS:
-```sh
-# dnf -y update
-```
-In Debian:
-```sh
-# apt update
-```
-
-> For CentOS, you will need the `EPEL` repository in order to install lighttpd. You already downloaded it during the `UFW` installation, but if you need, here's the command one more time:
+> For CentOS, you will need the `EPEL` repository in order to install `lighttpd`. You already downloaded it during the `UFW` installation, but if you need, here's the command one more time:
 > ```sh
 > # dnf install -y epel-release
 > ```
@@ -66,15 +55,15 @@ In CentOS:
 ```
 In Debian:
 ```sh
-# apt install lighttpd
+# aptitude install lighttpd
 ```
 
 After installation is complete, you can use the following commands to start and enable lighttpd at startup. Don't forget to also check its status and current version. The output should appear like this on [CentOS](screenshots/40.png)
 ```sh
+# lighttpd -v
 # systemctl start lighttpd
 # systemctl enable lighttpd
 # systemctl status lighttpd
-# lighttpd -v
 ```
 
 Now, you will need to allow HTTP traffic in you Firewall.
@@ -85,11 +74,11 @@ The default port for `http` traffic is `80`. Make sure it is already [included](
 ```sh
 # ufw status
 ``` 
-Now, if you're using CentOS, you must make sure SELinux is also permiting communication through port 80. To do so, check the HTTP ports and include 80 in your allowed list if its not already there (by default it usually is) by the following commands:
-```sh
-# semanage port -l | grep http
-# semanage port -a -t http_port_t -p tcp 80
-```
+> Now, if you're using CentOS, you must make sure SELinux is also permiting communication through port 80. To do so, check the HTTP ports and include 80 in your allowed list if its not already there (by default it usually is) by the following commands:
+> ```sh
+> # semanage port -l | grep http
+> # semanage port -a -t http_port_t -p tcp 80
+> ```
 
 ---
 <h2 id="DB">
@@ -106,7 +95,7 @@ In CentOS:
 ```
 In Debian:
 ```sh
-# apt install mariadb-server
+# aptitude install mariadb-server
 ```
 
 Same thing as done in `lighttpd`, you must make sure to start and enable `MariaDB` on startup:
@@ -124,10 +113,11 @@ Then, you should make sure tu secure MariaDB server with the following command:
 You should configure your MariaDB like [this](screenshots/42.png) and [this](screenshots/43.png): 
 
 ```sh
+# Switch to unix_socket authentication [Y/n]: Y
 # Enter current password for root (enter for none): Enter
 # Set root password? [Y/n]: Y
-# New password: C1t1zenK4ne
-# Re-enter new password: C1t1zenK4ne
+# New password: C1t1zenK4ne | M1lesD4vis
+# Re-enter new password: C1t1zenK4ne | M1lesD4vis
 # Remove anonymous users? [Y/n]: Y
 # Disallow root login remotely? [Y/n]: Y
 # Remove test database and access to it? [Y/n]:  Y
@@ -145,6 +135,8 @@ Now that you already have a database management system intalled, you will need t
 ```
 You will be asked to enter your DB password. Then, you can create de Database for your Wordpress site. The final result should look like [this](screenshots/45.png). To do so, use the following comands on the MariaDB terminal:
 
+On CentOS:
+
 ```txt
 MariaDB [(none)]> CREATE DATABASE wordpress;
 MariaDB [(none)]> CREATE USER 'admin'@'cado-car42' IDENTIFIED BY 'WPadm1n';
@@ -152,7 +144,15 @@ MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'cado-car42' IDENTIFIED BY
 FLUSH PRIVILEGES;
 EXIT;
 ```
+On Debian:
 
+```txt
+MariaDB [(none)]> CREATE DATABASE wordpress;
+MariaDB [(none)]> CREATE USER 'admin'@'hcastanh42' IDENTIFIED BY 'WPadm1n';
+MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'hcastanh42' IDENTIFIED BY 'WPadm1n' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+```
 
 ---
 <h2 id="DB">

@@ -571,8 +571,8 @@ Some useful cron commands:
 
 The **bonus** part implementation can be seen [here](Bonus-en.md). It is, however, completely optional. To complete the mandatory part, however, this is all you need to know about CentOS. The end product up until this point should be the following:
 
-- [System basic requirements](screenshots/38.png)
-- [Monitoring Script](screenshots/39.png)
+- [System basic requirements](screenshots/d66.png)
+- [Monitoring Script](screenshots/d67.png)
 
 ---
 <h2 id="sub">

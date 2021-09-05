@@ -440,6 +440,102 @@ In my server, I used:
 - For **hcastanh**: `Lou1s4rmstrong`.
 
 ---
+<h2 id="Host">
+	<b>Hostname, Users and Groups</b>
+</h2>
+
+You must be able to change, on demand, the `hostname` on you computer. For this project, the hostname must be your **intra login + 42**. It was already set upon installation, but the commands you must use to do this by command line are:
+
+- `hostnamectl status` - show current host information;
+- `hostnamectl set-hostname <new-hostname>` - change hostname on command line.
+
+You can also change your hostname by editing `/etc/hostname`. 
+
+On boot, you must have at least root and personal users available. The personal user must be your **intra login**. 
+To be evaluated, you must be able to show all users on your computer, add or remove users on command, change username, add users to groups or change the user's main group name. Here are some commands to help you do that: 
+- `less /etc/passwd | cut -d ":" -f 1` - show list of all users on computer;
+- `users` - show list of all users who are currently logged in;
+- `useradd <username>` - create new user with home directory;
+- `usermod <username>` - modify users settings, `-l` for username, `-c` for comments/Full Name and `-g` for GID;
+- `userdel -r <username>` - deletes user and all files attached to it;
+- `id -u <username>` - shows user's UID.
+
+Your intra login user must be on `wheel`(`sudo`) and `user42` groups. To ensure that happens, you can use some of the following commands:
+
+- `less /etc/group | cut -d ":" -f 1` - show list of all users on computer;
+- `groups <username>` - shows user's groups;
+- `groupadd <groupname>` - create new group;
+- `groupdel <groupname>` - delete group;
+- `gpasswd -a <username> <groupname>` - adds user to group;
+- `gpasswd -d <username> <groupname>` - removes user from group;
+- `getent group <groupname>` - show users in group;
+- `id -g <username>` - show user's main group GID.
+
+---
+<h2 id="Script">
+	<b>Monitoring Script</b>
+</h2>
+
+It is mandatory to, at server startup, for a script to be displayed every 10 minutes to all terminals with some important information on the server's status. This information is listed below: 
+> - The architecture of your operating system and its kernel version;
+> - The number of physical processors;
+> - The number of virtual processors;
+> - The current available RAM on your server and its utilization rate as a percentage;
+> - The current available memory on your server and its utilization rate as a percentage;
+> - The current utilization rate of your processors as a percentage;
+> - The date and time of the last reboot;
+> - Whether LVM is active or not;
+> - The number of active connections;
+> - The number of users using the server;
+> - The IPv4 address of your server and its MAC (Media Access Control) address;
+> - The number of commands executed with the sudo program.
+
+You must write your script on a file called [`monitoring.sh`](https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/5397a3faa91f689bd956d2b656ccea8d2b199412/script/monitoring.sh), and it **must** have execution rights (I chose to `chmod 755`).
+
+To run the script as demanded, we must first understand two very important concepts: 
+
+<h3>
+WALL
+</h3>
+
+**Wall** is a command that allows you to write a message to all users, in all terminals. It can receive either a text (it broadcasts message like `echo`) or a file content (like `cat`). 
+
+By default, `wall` broadcasts message with a banner on top. For this project, the banner is optional.
+
+To use **wall** you have two options:
+
+- `wall <"message">`
+- `wall -n <"message">` - displays with no banner
+
+<h3>
+CRON
+</h3>
+
+**Cron** is a service that runs on the backgroud and lauches configured tasks on a schedule. Cron is present on Debian by default. To check its version or even, by some reason, eventually install it, use: 
+```sh
+# aptitude install cron
+```
+
+Now, let's make sure it is running at startup:
+```sh
+# systemctl enable crond
+```
+You can also `disable`, `start`, `stop` and `restart` this service at your will.
+
+Cron uses `crontab` files to schedule given tasks. To manage those tasks and its frequency of execution, run: 
+```sh
+# crontab -e
+```
+It will create your own crontab (each user has one - or many). You can edit to your own like, following the syntax shown [here](screenshots/d65.png). 
+
+The task specified (in my case `bash /root/scripts/monitoring.sh | wall`) will be executed on a step of every 10 (`*/10`) minutes (first column). However, according to the projects specifications, the script must run from the server **startup**. To do so, I added [`sleep.sh`](https://github.com/caroldaniel/42sp-cursus-born2beroot/blob/cfe26f86e79f43340f18544342e61b246247232c/script/sleep.sh) on my crontab. 
+
+Some useful cron commands:
+- `crontab -l` - display the current cron settings
+- `crontab -u <username> -l` - display the current cron settings of a specific user
+- `crontab -u <username> -e` - edit the cron settings of a specific user
+
+---
 <h2>
 	<b>References</b>
 </h2>
