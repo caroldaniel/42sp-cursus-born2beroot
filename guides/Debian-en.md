@@ -211,6 +211,233 @@ To eventually disable the firewall, use:
 ```sh
 # ufw disable
 ```
+---
+<h2 id="SSH">
+	<b>SSH</b>
+</h2>
+
+**Secure Socket Shell** is a network protocol that gives users, particularly system administrators, a secure way to access a computer over an unsecured network. It provides users with a strong password authentication as well as a public key authentication. It attempts to safely communicate encrypted data over two computers using an open network. 
+
+In order to install or update the SSH server and client, use: 
+```sh
+# aptitude install openssh-server openssh-client
+```
+In order to check if the ssh service is running, use:
+```sh
+# systemctl status sshd
+```
+To start or stop the service use:
+```sh
+# systemctl start/stop sshd
+```
+To enable it on boot (**very important**), use:
+```sh
+# systemctl enable sshd
+```
+
+In order to change the default SSH port, you need to [edit](screenshots/d57.png) the `/etc/ssh/sshd_config` so that you deny access from root and the default port becomes 4242. Use a text editor of your choice. I chose vim (you may need to install it by using `aptitude install vim` on the command line). 
+```sh
+# vim /etc/ssh/sshd_config
+```
+After you edit the configuration file, restart your sshd service.
+```sh
+# systemctl restart sshd
+```
+Now you must make sure that your `SSH` connection is the only socket available on your server. A `socket` is a logical endpoint for communication. They exist on the transport layer. You can send and receive things on a socket, you can bind and listen to a socket. A socket is specific to a protocol, machine, and port, and is addressed as such in the header of a packet. To ckeck your socket status, use:
+
+```sh
+# ss -tunlp
+```
+
+<h3>
+IMPORTANT
+</h3>
+
+In some computers, it is possible that your own internet connection is being classified as `socket`, and is beeing listed as such like in the following [example](screenshots/d58.png). 
+
+To try and mitigate this, so that only SSH is being used as a valid socket, you should set your Machine IP as **static**. To do so, install `net-tools` in your machine, in order to adquire the `ifconfig` command. You will need it to easily [extract some information](screenshots/d59.png) about your machine: your `network interface`, you `IP address`, your `netmask` and your `gateway`.  
+
+```sh
+# aptitude install net-tools
+# ifconfig -a
+# route -n
+```
+
+Now, edit the file `/etc/network/interfaces`so it looks like [this](screeshots/d60.png).
+
+Now, list the sockets available again.
+
+```sh
+# ss -tunlp
+```
+
+At the end, your socket list should look like something like [this](screenshots/d61.png).
+
+---
+<h2 id="TestSSH">
+	<b>Testing the SSH connection</b>
+</h2>
+
+You can easily test if your SSH conection is properly working by attempting to connect to your VM using another computer's terminal. On Linux's distros, WSL or MacOS it is available by default. On Windows your have to install `PuTTY`.
+
+To connect remotely to your server use: 
+```sh
+# ssh <server-user>@<server's IP number> -p <ssh-port>
+```
+ To check your server's IP number, use the command `ip addr show` as [this](screenshots/d62.png)
+
+ In my server, the command was written as followed:
+> ```sh
+> # ssh hcastanh@192.168.15.121 -p 4242
+> ```
+
+However this command only works if both computers are logged into the same local network. You may test this in your own computer. There are no root access in this method, my security reasons. 
+
+You may also send files through SSH using the following command: 
+```sh
+# scp -P <ssh-port> <filename> <server-user>@<server's IP number>:<newfilepath>
+```
+
+To leave SSH connection use: 
+- `logout`
+- `exit`
+
+---
+<h2 id="SUDO">
+	<b>SUDO</b>
+</h2>
+
+Check if you already have `sudo` on your system:
+
+```sh
+# sudo --version
+```
+In case you don't, install it. You will need root privileges:
+
+```sh
+# aptitude install sudo
+```
+
+You will first need to configure some rules for the sudo group. There are many ways to do it: 
+
+- Edit the `/etc/sudoers` file using text editors such as `vim` or `nano` (you will need to install them beforehand),
+- Use the `visudo` command (which will open the same `/etc/sudoers` file) on a preeinstalled `vim` or
+- Include a new file with the new specific rules asked on `/etc/sudoers.d` (that is later automatically scanned and included on `/etc/sudoers`). 
+
+For organizational purposes, I chose the latter. However, some adjustments were necessary before. First, we need to create the `/var/log/sudo/` directory:
+
+```sh
+# mkdir /var/log/sudo
+```
+Then, we need to comment the line on `/etc/sudoers` that holds the information on the `secure_path` which we will be reassigning on the new file. 
+
+To configure the new sudo rules, I used the following command on root permition:
+
+```sh
+# visudo -f /etc/sudoers.d/sudoers-specs 
+```
+
+On the `vim` interface in the new file, [the rules were added](screenshots/d63.png).
+
+To check all users on the system, use: 
+
+```sh
+# less /etc/passwd
+```
+
+Each line in the file has seven fields delimited by colons that contain the following information:
+
+> - User name;
+> - Encrypted password (x means that the password is stored in the /etc/shadow file);
+> - User ID number (UID);
+> - User’s group ID number (GID);
+> - Full name of the user;
+> - User home directory;
+> - Login shell.
+
+To check all groups on the system, and its users, use: 
+
+```sh
+# less /etc/group
+```
+
+In order to add a user to the `sudo`group you must use the command `gpasswd -a <username> sudo`. To remove them we use the `-d` flag instead of `-a`. To move the previously created user made on installation with the intra login, I used: 
+
+```sh
+# gpasswd -a hcastanh sudo
+```
+
+You also have to make sure the line on `/etc/sudoers` that says `%sudo ALL=(ALL:ALL) ALL` is uncommented. After aplying the changes, you may need to reboot your system. 
+
+Alternatively, to check all groups a certain member is, you may use:
+```sh
+# groups <username>
+```
+
+---
+<h2 id="Passwd">
+	<b>Password Policy</b>
+</h2>
+
+We must apply a strong password policy for all users, root included, that must be set to this:
+> 1. Your password has to expire every 30 days.
+> 2. The minimum number of days allowed before the modification of a password will be set to 2.
+> 3. The user has to receive a warning message 7 days before their password expires.
+> 4. Your password must be at least 10 characters long. 
+> 5. It must contain an uppercase letter and a number. Also, it must not contain more than 3 consecutive identical characters.
+> 6. The password must not include the name of the user.
+> 7. The following rule does not apply to the root password **by default**: The password must have at least 7 characters that are not part of the former password.
+
+The first 4 rules must be set by editing `/etc/login.defs`. The final result should look like [this](screenshots/d64.png).
+
+For the users already created (root included) these optons will not be automatically enabled. You will have to enforce them by using the `chage` command and manually apply the rules above. You can use the flag `-l` to list the rules applied to a specific user.
+```sh
+# chage -M 30 <username/root>
+# chage -m 2 <username/root>
+# chage -W 7 <username/root>
+# chage -l <username/root>
+```
+
+The last 3 rules can be applied by using a package already installed on CentOS by default called `pam-pwquality`. Check its version using: 
+```sh
+# dnf list installed | grep libpwquality 
+```
+To apply these rules, you shoud edit `etc/security/pwquality.conf` by uncommenting and changing the following lines: 
+
+```sh
+# Number of characters in the new password that must not be present in the 
+# old password.
+difok = 7
+# The minimum acceptable size for the new password (plus one if 
+# credits are not disabled which is the default)
+minlen = 10
+# The maximum credit for having digits in the new password. If less than 0 
+# it is the minimun number of digits in the new password.
+dcredit = -1
+# The maximum credit for having uppercase characters in the new password. 
+# If less than 0 it is the minimun number of uppercase characters in the new 
+# password.
+ucredit = -1
+# The maximum number of allowed consecutive same characters in the new password.
+# The check is disabled if the value is 0.
+maxrepeat = 3
+# Whether to check it it contains the user name in some form.
+# The check is disabled if the value is 0.
+usercheck = 1
+# Prompt user at most N times before returning with error. The default is 1.
+retry = 3
+# Enforces pwquality checks on the root user password.
+# Enabled if the option is present.
+enforce_for_root
+```
+
+Then you will need to set new passwords for the users already created (root included), following the new password policy:
+```sh
+# passwd <username>
+```
+In my server, I used:
+- For **root**: `Ell4F1tzgerald`.
+- For **hcastanh**: `Lou1s4rmstrong`.
 
 ---
 <h2>

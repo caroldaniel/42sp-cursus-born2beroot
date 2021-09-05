@@ -15,6 +15,9 @@
 <h2>
 	Final score
 </h2>
+<img src=https://github.com/caroldaniel/caroldaniel-utils/blob/c28d1f8b82e8f7127a0cbcf28e4981c265a4518b/born2beroot_grade.png alt="cado-car's 42Project Score"/>
+<h4>Completed + Bonus</h4>
+<img src=https://github.com/caroldaniel/caroldaniel-utils/blob/c28d1f8b82e8f7127a0cbcf28e4981c265a4518b/born2berootm.png alt="cado-car's 42Project Badge"/>
 </div>
 
 ---
