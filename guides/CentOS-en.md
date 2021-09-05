@@ -319,7 +319,7 @@ To connect remotely to your server use:
 > # ssh cado-car@192.168.15.181 -p 4242
 > ```
 
-Howeverm this command only works if both computers are logged into the same local network. You may test this in your own computer. There are no root access in this method, my security reasons. 
+However this command only works if both computers are logged into the same local network. You may test this in your own computer. There are no root access in this method, my security reasons. 
 
 You may also send files through SSH using the following command: 
 ```sh
