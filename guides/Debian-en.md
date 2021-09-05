@@ -398,9 +398,9 @@ For the users already created (root included) these optons will not be automatic
 # chage -l <username/root>
 ```
 
-The last 3 rules can be applied by using a package already installed on CentOS by default called `pam-pwquality`. Check its version using: 
+The last 3 rules can be applied by using a package called `pam-pwquality`. To download it use: 
 ```sh
-# dnf list installed | grep libpwquality 
+# aptitude install libpam-pwquality
 ```
 To apply these rules, you shoud edit `etc/security/pwquality.conf` by uncommenting and changing the following lines: 
 
