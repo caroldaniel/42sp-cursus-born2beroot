@@ -148,8 +148,8 @@ On Debian:
 
 ```txt
 MariaDB [(none)]> CREATE DATABASE wordpress;
-MariaDB [(none)]> CREATE USER 'admin'@'hcastanh42' IDENTIFIED BY 'WPadm1n';
-MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'hcastanh42' IDENTIFIED BY 'WPadm1n' WITH GRANT OPTION;
+MariaDB [(none)]> CREATE USER 'admin'@'localhost' IDENTIFIED BY 'WPadm1n';
+MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'localhost' IDENTIFIED BY 'WPadm1n' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -245,16 +245,34 @@ Then, you must make sure that `lighttpd` is getting the correct folder in which 
 
 ### **In Debian:**
 
+After installing all the php packages, you will need to configure some extra details. First, you will need to make sure `Apache2`is not installed in your server. It might be so thanks to php dependencies or even a pre-installation option you might have accidentely flagged. If it is, remove it completely from it, as so not to create any clashes between the two http servers.
 
+```sh
+# aptitude purge apache2
+```
+Then, you will need to configure some php info, make it look like [this](screenshots/d69.png):
 
+```sh
+# vim /etc/php/8.0/cgi/php.ini
+```
+Another php file to look like [this](screenshots/d70.png):
+```sh
+# vim /etc/php/8.0/fpm/pool.d/www.conf
+```
 
+Now, make sure you configure you fastcgi file to contain some information on host and port, like [this](screeshots/d68.png).
+```sh
+# vim /etc/lighttpd/conf-available/15-fastcgi-php.conf
+```
 
+Now, you must activate the modules for `fastcgi` using the following comands:
+```sh
+# lighty-enable-mod fastcgi
+# lighty-enable-mod fastcgi-php
+```
+### **For both CentOS and Debian**
 
-
-
-
-
-Now, for both CentOS and Debian, you can check if your connection is working properly by creating an [information file](screenshots/51.png) to be displayed at your local browser:
+Now you can check if your connection is working properly by creating an [information file](screenshots/51.png) to be displayed at your local browser:
 ```sh
 # vi /var/www/html/info.php
 ```
@@ -276,8 +294,8 @@ In CentOS:
 ```
 In Debian:
 ```sh
-# apt install wget
-# apt install tar
+# aptitude install wget
+# aptitude install tar
 ```
 
 After that, you can download the latest available release of Wordpress and unzip it:
@@ -308,13 +326,16 @@ In Debian:
 ```sh
 # chown -R www-data:www-data /var/www/html/
 # chmod -R 755 /var/www/html/
-# chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
 ```
 
-At last, restart `lighttpd` againg and we are finally able to go to the computer's browser and type:
+At last, restart `lighttpd` againg and we are finally able to go to the computer's browser and typed:
 
 ```txt
 http://192.168.15.181/
+```
+And
+```txt
+http://192.168.15.121/
 ```
 
 The [configuration menu](screenshots/55.png) for Wordpress should appear. You may configure it as you wish, [these](screenshots/56.png) are my configuration settings. Once it's all set, you may configure it as you wish: the sky is the limit!
@@ -338,8 +359,15 @@ We will install `Fail2Ban` and configure it so it blocks remote attempts from SS
 
 `Fail2Ban` can be found on the `EPEL` repository, which was already enabled previously on our machine. You can install it normally:
 
+In CentOS:
+
 ```sh
 # dnf install fail2ban
+```
+In Debian:
+
+```sh
+# aptitude install fail2ban
 ```
 Then, you can start it. I chose **not** to enable it at startup:
 ```sh

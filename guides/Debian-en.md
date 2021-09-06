@@ -536,6 +536,30 @@ Some useful cron commands:
 - `crontab -u <username> -e` - edit the cron settings of a specific user
 
 ---
+<h2 id="Bonus">
+	<b>Bonus</b>
+</h2>
+
+The **bonus** part implementation can be seen [here](Bonus-en.md). It is, however, completely optional. To complete the mandatory part, however, this is all you need to know about CentOS. The end product up until this point should be the following:
+
+- [System basic requirements](screenshots/d66.png)
+- [Monitoring Script](screenshots/d67.png)
+
+---
+<h2 id="sub">
+	<b>Submission</b>
+</h2>
+
+In order to submit this project, we need to extract an [`signature.txt`]() file from your Virtual Machine. To do so, go to you `Virtual Box VMs` folder in you local computer and use the following command: 
+
+- **Windows**: certUtil -hashfile centos_serv.vdi sha1
+- **Linux**: sha1sum centos_serv.vdi
+- **For Mac M1**: shasum Centos.utm/Images/disk-0.qcow2
+- **MacOS**: shasum centos_serv.vdi
+
+`centos_serv` being your active Virtual Machine. 
+
+---
 <h2>
 	<b>References</b>
 </h2>
