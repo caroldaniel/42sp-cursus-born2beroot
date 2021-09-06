@@ -42,18 +42,7 @@ We will also need to deal with our firewall and MAC systems in order to allow co
 
 **Lighttpd** is an open-source web server known for being fast, secure and optimized for less memory consumption than its pairs. 
 
-To install `lighttpd` on your system, you first need to make sure your packages are all up-to-date. You will need root privileges for the entire process. 
-
-In CentOS:
-```sh
-# dnf -y update
-```
-In Debian:
-```sh
-# apt update
-```
-
-> For CentOS, you will need the `EPEL` repository in order to install lighttpd. You already downloaded it during the `UFW` installation, but if you need, here's the command one more time:
+> For CentOS, you will need the `EPEL` repository in order to install `lighttpd`. You already downloaded it during the `UFW` installation, but if you need, here's the command one more time:
 > ```sh
 > # dnf install -y epel-release
 > ```
@@ -66,15 +55,15 @@ In CentOS:
 ```
 In Debian:
 ```sh
-# apt install lighttpd
+# aptitude install lighttpd
 ```
 
 After installation is complete, you can use the following commands to start and enable lighttpd at startup. Don't forget to also check its status and current version. The output should appear like this on [CentOS](screenshots/40.png)
 ```sh
+# lighttpd -v
 # systemctl start lighttpd
 # systemctl enable lighttpd
 # systemctl status lighttpd
-# lighttpd -v
 ```
 
 Now, you will need to allow HTTP traffic in you Firewall.
@@ -85,11 +74,11 @@ The default port for `http` traffic is `80`. Make sure it is already [included](
 ```sh
 # ufw status
 ``` 
-Now, if you're using CentOS, you must make sure SELinux is also permiting communication through port 80. To do so, check the HTTP ports and include 80 in your allowed list if its not already there (by default it usually is) by the following commands:
-```sh
-# semanage port -l | grep http
-# semanage port -a -t http_port_t -p tcp 80
-```
+> Now, if you're using CentOS, you must make sure SELinux is also permiting communication through port 80. To do so, check the HTTP ports and include 80 in your allowed list if its not already there (by default it usually is) by the following commands:
+> ```sh
+> # semanage port -l | grep http
+> # semanage port -a -t http_port_t -p tcp 80
+> ```
 
 ---
 <h2 id="DB">
@@ -106,7 +95,7 @@ In CentOS:
 ```
 In Debian:
 ```sh
-# apt install mariadb-server
+# aptitude install mariadb-server
 ```
 
 Same thing as done in `lighttpd`, you must make sure to start and enable `MariaDB` on startup:
@@ -124,10 +113,11 @@ Then, you should make sure tu secure MariaDB server with the following command:
 You should configure your MariaDB like [this](screenshots/42.png) and [this](screenshots/43.png): 
 
 ```sh
+# Switch to unix_socket authentication [Y/n]: Y
 # Enter current password for root (enter for none): Enter
 # Set root password? [Y/n]: Y
-# New password: C1t1zenK4ne
-# Re-enter new password: C1t1zenK4ne
+# New password: C1t1zenK4ne | M1lesD4vis
+# Re-enter new password: C1t1zenK4ne | M1lesD4vis
 # Remove anonymous users? [Y/n]: Y
 # Disallow root login remotely? [Y/n]: Y
 # Remove test database and access to it? [Y/n]:  Y
@@ -145,6 +135,8 @@ Now that you already have a database management system intalled, you will need t
 ```
 You will be asked to enter your DB password. Then, you can create de Database for your Wordpress site. The final result should look like [this](screenshots/45.png). To do so, use the following comands on the MariaDB terminal:
 
+On CentOS:
+
 ```txt
 MariaDB [(none)]> CREATE DATABASE wordpress;
 MariaDB [(none)]> CREATE USER 'admin'@'cado-car42' IDENTIFIED BY 'WPadm1n';
@@ -152,7 +144,15 @@ MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'cado-car42' IDENTIFIED BY
 FLUSH PRIVILEGES;
 EXIT;
 ```
+On Debian:
 
+```txt
+MariaDB [(none)]> CREATE DATABASE wordpress;
+MariaDB [(none)]> CREATE USER 'admin'@'localhost' IDENTIFIED BY 'WPadm1n';
+MariaDB [(none)]> GRANT ALL ON wordpress.* TO 'admin'@'localhost' IDENTIFIED BY 'WPadm1n' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+```
 
 ---
 <h2 id="DB">
@@ -194,15 +194,14 @@ In Debian:
 # aptitude install php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 
+This is the part where CentOS and Debian diverge a great deal. Let's break it into two parts:
+
+### **In CentOS:**
+
 After this, you can install `lighttpd-fastcgi`:
 
-In CentOS:
 ```sh
 # dnf install lighttpd-fastcgi
-```
-In Debian:
-```sh
-# aptitude install lighttpd-fastcgi
 ```
 
 Now, since you installed `php-fpm` and `lighttpd-fastcgi`, you must configure some details. 
@@ -227,21 +226,55 @@ Then, open a fourth file called `/etc/lighttpd/conf.d/fastcgi.conf` and edit [th
 # vi /etc/lighttpd/conf.d/fastcgi.conf
 ```
 
-> Lastly, if you're using `CentOS` you must make sure that your SELinux is allowing connection to your `http server` and your `database`:
-> ```sh
-> # setsebool -P httpd_can_network_connect 1
-> # setsebool -P httpd_can_network_connect_db 1
-> ```
+Lastly, you must make sure that your SELinux is allowing connection to your `http server` and your `database`:
+```sh
+# setsebool -P httpd_can_network_connect 1
+# setsebool -P httpd_can_network_connect_db 1
+```
 
 You will need to start and enable PHP-FPM on boot:
 ```sh
 # systemctl start php-fpm
 # systemctl enable php-fpm
 ```
+Then, you must make sure that `lighttpd` is getting the correct folder in which your wordpress data is (`/var/www/html/`). To do so, change your lighttpd server root location to be like [this](screenshots/61.png).
 
-To check if your connection is working properly, you can create an [information file](screenshots/51.png) to be displayed at your local browser:
 ```sh
-# vi /var/www/lighttpd/info.php
+# vim /etc/lighttpd/lighttpd.conf
+```
+
+### **In Debian:**
+
+After installing all the php packages, you will need to configure some extra details. First, you will need to make sure `Apache2`is not installed in your server. It might be so thanks to php dependencies or even a pre-installation option you might have accidentely flagged. If it is, remove it completely from it, as so not to create any clashes between the two http servers.
+
+```sh
+# aptitude purge apache2
+```
+Then, you will need to configure some php info, make it look like [this](screenshots/d69.png):
+
+```sh
+# vim /etc/php/8.0/cgi/php.ini
+```
+Another php file to look like [this](screenshots/d70.png):
+```sh
+# vim /etc/php/8.0/fpm/pool.d/www.conf
+```
+
+Now, make sure you configure you fastcgi file to contain some information on host and port, like [this](screeshots/d68.png).
+```sh
+# vim /etc/lighttpd/conf-available/15-fastcgi-php.conf
+```
+
+Now, you must activate the modules for `fastcgi` using the following comands:
+```sh
+# lighty-enable-mod fastcgi
+# lighty-enable-mod fastcgi-php
+```
+### **For both CentOS and Debian**
+
+Now you can check if your connection is working properly by creating an [information file](screenshots/51.png) to be displayed at your local browser:
+```sh
+# vi /var/www/html/info.php
 ```
 Then you can try and access it going to you `http://'your-ip-address'/info.php`. Your webpage should display something like [this](screenshots/52.png).
 
@@ -261,8 +294,8 @@ In CentOS:
 ```
 In Debian:
 ```sh
-# apt install wget
-# apt install tar
+# aptitude install wget
+# aptitude install tar
 ```
 
 After that, you can download the latest available release of Wordpress and unzip it:
@@ -281,12 +314,6 @@ Create a Wordpress configuration file from its downloaded sample, and then edit 
 
 You must alter the 3 lines that specify the `DB name`, `DB user`, `DB password` and `DB host`, like [this](screenshots/46.png).
 
-Then, you must make sure that `lighttpd` is getting the correct folder in which your wordpress data is (`/var/www/html/`). To do so, change your lighttpd server root location to be like [this](screenshots/61.png).
-
-```sh
-# vim /etc/lighttpd/lighttpd.conf
-```
-
 Lastly, you must change your wordpress folders permitions:
 
 In CentOS:
@@ -299,13 +326,16 @@ In Debian:
 ```sh
 # chown -R www-data:www-data /var/www/html/
 # chmod -R 755 /var/www/html/
-# chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
 ```
 
-At last, restart `lighttpd` againg and we are finally able to go to the computer's browser and type:
+At last, restart `lighttpd` againg and we are finally able to go to the computer's browser and typed:
 
 ```txt
 http://192.168.15.181/
+```
+And
+```txt
+http://192.168.15.121/
 ```
 
 The [configuration menu](screenshots/55.png) for Wordpress should appear. You may configure it as you wish, [these](screenshots/56.png) are my configuration settings. Once it's all set, you may configure it as you wish: the sky is the limit!
@@ -329,8 +359,15 @@ We will install `Fail2Ban` and configure it so it blocks remote attempts from SS
 
 `Fail2Ban` can be found on the `EPEL` repository, which was already enabled previously on our machine. You can install it normally:
 
+In CentOS:
+
 ```sh
 # dnf install fail2ban
+```
+In Debian:
+
+```sh
+# aptitude install fail2ban
 ```
 Then, you can start it. I chose **not** to enable it at startup:
 ```sh

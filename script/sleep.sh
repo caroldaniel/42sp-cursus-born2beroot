@@ -1,1 +1,1 @@
-sleep $(bc <<< $(bc <<< $(uptime -s | cut -d ":" -f 2)%10*60+$(uptime -s | cut -d ":" -f 3)))
+sleep $(bc <<< $(who -b | cut -d ":" -f 2)%10*60)
