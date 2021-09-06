@@ -338,13 +338,19 @@ And
 http://192.168.15.121/
 ```
 
-The [configuration menu](screenshots/55.png) for Wordpress should appear. You may configure it as you wish, [these](screenshots/56.png) are my configuration settings. Once it's all set, you may configure it as you wish: the sky is the limit!
+The [configuration menu](screenshots/55.png) for Wordpress should appear. You may configure it as you wish, [these](screenshots/56.png) are my configuration settings, and [these](screenshots/d71.png) are [@]HCastanh](https://github.com/HCastanha)'s. Once it's all set, you may configure it as you wish: the sky is the limit!
 
 At the end, my Wordpress website looked like this:
 
 <img src="screenshots/57.png" width="1000">
 <img src="screenshots/58.png" width="1000">
 <img src="screenshots/59.png" width="1000">
+
+And Herbie's looked like this:
+<img src="screenshots/d72.png" width="1000">
+<img src="screenshots/d73.png" width="1000">
+<img src="screenshots/d74.png" width="1000">
+<img src="screenshots/d75.png" width="1000">
 
 ---
 <h2 id="F2b">
