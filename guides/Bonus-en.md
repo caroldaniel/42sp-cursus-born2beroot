@@ -174,25 +174,34 @@ EXIT;
 > # dnf module enable -y php:remi-8.0
 > ```
 
+> If you're using Debian you you need to install some repositories in order to be able to install `php 8.0`. 
+> ```sh
+> # aptitude install -y lsb-release ca-certificates apt-transport-https software-properties-common
+> # echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+> # wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+> # aptitude update
+> # aptitude install php8.0
+> ```
+
 You must install PHP and some of its modules that might be helpful to create a full operational Wordpress website. Only `php-cgi` `php-common` `php-cli` and `php-mysql` are in fact, fundamental to this project. However, I chose to download some other in order to, in the future, be able to expand my website's functionality. You may choose any packages you may find interesting. 
 
 In CentOS:
 ```sh
-# dnf install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
+# dnf install php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 In Debian:
 ```sh
-# apt install php php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
+# aptitude install php-cgi php-common php-cli php-mysql php-gd php-imagick php-recode php-tidy php-xml php-xmlrpc php-fpm
 ```
 
+This is the part where CentOS and Debian diverge a great deal. Let's break it into two parts:
+
+### **In CentOS:**
+
 After this, you can install `lighttpd-fastcgi`:
-In CentOS:
+
 ```sh
 # dnf install lighttpd-fastcgi
-```
-In Debian:
-```sh
-# apt install lighttpd-fastcgi
 ```
 
 Now, since you installed `php-fpm` and `lighttpd-fastcgi`, you must configure some details. 
@@ -217,21 +226,37 @@ Then, open a fourth file called `/etc/lighttpd/conf.d/fastcgi.conf` and edit [th
 # vi /etc/lighttpd/conf.d/fastcgi.conf
 ```
 
-> Lastly, if you're using `CentOS` you must make sure that your SELinux is allowing connection to your `http server` and your `database`:
-> ```sh
-> # setsebool -P httpd_can_network_connect 1
-> # setsebool -P httpd_can_network_connect_db 1
-> ```
+Lastly, you must make sure that your SELinux is allowing connection to your `http server` and your `database`:
+```sh
+# setsebool -P httpd_can_network_connect 1
+# setsebool -P httpd_can_network_connect_db 1
+```
 
 You will need to start and enable PHP-FPM on boot:
 ```sh
 # systemctl start php-fpm
 # systemctl enable php-fpm
 ```
+Then, you must make sure that `lighttpd` is getting the correct folder in which your wordpress data is (`/var/www/html/`). To do so, change your lighttpd server root location to be like [this](screenshots/61.png).
 
-To check if your connection is working properly, you can create an [information file](screenshots/51.png) to be displayed at your local browser:
 ```sh
-# vi /var/www/lighttpd/info.php
+# vim /etc/lighttpd/lighttpd.conf
+```
+
+### **In Debian:**
+
+
+
+
+
+
+
+
+
+
+Now, for both CentOS and Debian, you can check if your connection is working properly by creating an [information file](screenshots/51.png) to be displayed at your local browser:
+```sh
+# vi /var/www/html/info.php
 ```
 Then you can try and access it going to you `http://'your-ip-address'/info.php`. Your webpage should display something like [this](screenshots/52.png).
 
@@ -270,12 +295,6 @@ Create a Wordpress configuration file from its downloaded sample, and then edit 
 ```
 
 You must alter the 3 lines that specify the `DB name`, `DB user`, `DB password` and `DB host`, like [this](screenshots/46.png).
-
-Then, you must make sure that `lighttpd` is getting the correct folder in which your wordpress data is (`/var/www/html/`). To do so, change your lighttpd server root location to be like [this](screenshots/61.png).
-
-```sh
-# vim /etc/lighttpd/lighttpd.conf
-```
 
 Lastly, you must change your wordpress folders permitions:
 
@@ -354,3 +373,4 @@ To find status of failed and banned IP address, and the log file for `fail2ban`:
 <p><a href="https://mariadb.org/"><i><b>MariaDB Website</b></i></a></p>
 <p><a href="https://www.osradar.com/install-wordpress-with-lighttpd-debian-10/"><i><b>How to install WordPress with lighttpd on Debian 10?</b></i></a></p>
 <p><a href="https://www.tecmint.com/install-lighttpd-with-php-fpm-mariadb-on-centos/"><i><b>How to Install Lighttpd with PHP and MariaDB on CentOS/RHEL 8/7</b></i></a></p>
+<p><a href="https://computingforgeeks.com/how-to-install-php-on-debian-linux/"><i><b>How to Install PHP on Debian 11</b></i></a></p>
