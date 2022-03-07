@@ -597,7 +597,7 @@ In order to submit this project, we need to extract an [`signature.txt`]() file 
 <p><a href="https://wiki.ubuntu.com/Lvm"><i><b>What is LVM</b></i></a></p>
 <p><a href="https://www.golinuxcloud.com/create-lvm-during-installation-rhel-centos-8/"><i><b>LVM during CentOS installation</b></i></a></p>
 <p><a href="https://blog.eldernode.com/dnf-command-on-centos-8/"><i><b>DNF command on CentOS 8</b></i></a></p>
-<p><a href="https://www.scionova.com/2019/04/08/securing-linux-with-mandatory-access-control/"><i><b>Securing Linux with MAC</b></i></a></p>
+<p><a href="https://www.scionova.com/securing-linux-with-mandatory-access-control/"><i><b>Securing Linux with MAC</b></i></a></p>
 <p><a href="https://wiki.centos.org/HowTos/SELinux"><i><b>About SELinux</b></i></a></p>
 <p><a href="https://www.linode.com/docs/guides/a-beginners-guide-to-selinux-on-centos-8/"><i><b>SELinux on CentOS 8</b></i></a></p>
 <p><a href="https://shouts.dev/install-and-setup-ufw-firewall-on-centos-8-rhel-8"><i><b>Set up UFW on CentOS 8</b></i></a></p>
