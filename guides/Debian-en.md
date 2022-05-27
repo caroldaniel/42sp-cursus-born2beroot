@@ -263,7 +263,7 @@ To try and mitigate this, so that only SSH is being used as a valid socket, you 
 # route -n
 ```
 
-Now, edit the file `/etc/network/interfaces`so it looks like [this](screeshots/d60.png).
+Now, edit the file `/etc/network/interfaces`so it looks like [this](screenshots/d60.png).
 
 Now, list the sockets available again.
 
